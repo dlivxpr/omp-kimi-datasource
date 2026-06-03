@@ -40,7 +40,7 @@ export async function callGateway(
       "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json",
       "X-Msh-Tool-Call-Id": randomUUID(),
-      "X-Msh-Platform": getKimiHeader("KIMI_MSH_PLATFORM", "omp"),
+      "X-Msh-Platform": getKimiHeader("KIMI_MSH_PLATFORM", "kimi_cli"),
       "X-Msh-Version": getKimiHeader("KIMI_MSH_VERSION", "kimi-datasource-omp"),
       "X-Msh-Device-Name": getKimiHeader("KIMI_MSH_DEVICE_NAME", "kimi-datasource-omp"),
       "X-Msh-Device-Model": getKimiHeader("KIMI_MSH_DEVICE_MODEL", "kimi-datasource-omp"),
