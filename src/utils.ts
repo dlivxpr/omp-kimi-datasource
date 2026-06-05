@@ -1,6 +1,7 @@
 import { dirname, parse, resolve } from "path";
 import { mkdirSync, writeFileSync } from "fs";
-import type { Logger } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
+type Logger = Pick<ExtensionAPI["logger"], "warn">;
 export function extractText(response: unknown): string {
   if (typeof response === "string") {
     return response;

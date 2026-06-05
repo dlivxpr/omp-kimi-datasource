@@ -32,7 +32,7 @@ export default function activate(pi: ExtensionAPI) {
         };
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
-        pi.logger.error("get_data_source_desc 失败:", message);
+        pi.logger.error("get_data_source_desc 失败", { message });
         return {
           content: [{ type: "text" as const, text: `查询数据源描述失败：${message}` }],
         };
@@ -99,7 +99,7 @@ export default function activate(pi: ExtensionAPI) {
         };
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
-        pi.logger.error("call_data_source_tool 失败:", message);
+        pi.logger.error("call_data_source_tool 失败", { message });
         return {
           content: [{ type: "text" as const, text: `调用数据源工具失败：${message}` }],
         };

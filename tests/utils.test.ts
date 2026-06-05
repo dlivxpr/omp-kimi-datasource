@@ -3,13 +3,11 @@ import { tmpdir } from "os";
 import { join } from "path";
 import { afterEach, describe, expect, test } from "bun:test";
 import { extractText, writeFiles } from "../src/utils";
-import type { Logger } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
+type Logger = Pick<ExtensionAPI["logger"], "warn">;
 
 const silentLogger: Logger = {
-  debug() {},
-  info() {},
   warn() {},
-  error() {},
 };
 
 

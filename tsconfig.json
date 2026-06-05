@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "types": ["node"]
+    "types": ["node", "bun"]
   },
-  "include": ["src/**/*.ts", "types/**/*.d.ts"]
+  "include": ["src/**/*.ts"]
 }
