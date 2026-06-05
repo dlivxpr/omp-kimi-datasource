@@ -17,9 +17,17 @@ Kimi Code data-source plugin for [oh-my-pi](https://github.com/oh-my-pi/oh-my-pi
 
 ## 安装
 
+### 本地开发/私有仓库（推荐）
+
 ```bash
-omp install https://github.com/dlivxpr/kimi-datasource-for-omp
+# 克隆仓库
+git clone https://github.com/dlivxpr/kimi-datasource-for-omp.git
+cd kimi-datasource-for-omp
+
+# 链接到 omp
+omp plugin link .
 ```
+
 
 ## 前置条件
 
@@ -30,7 +38,6 @@ omp install https://github.com/dlivxpr/kimi-datasource-for-omp
 ```bash
 omp login kimi-code
 ```
-
 ## 使用
 
 安装后，Claude 会在涉及外部数据查询时自动使用本插件的工具：
@@ -42,20 +49,27 @@ omp login kimi-code
 
 详见 [`skills/kimi-datasource/SKILL.md`](skills/kimi-datasource/SKILL.md)。
 
+## 验收
+
+安装完成后，确认插件已启用：
+
+```bash
+omp plugin list
+```
+
+启动 omp 后，模型应当可见 `get_data_source_desc` 和 `call_data_source_tool` 两个工具。
+
 ## 目录结构
 
 ```
 .
-├── plugin.json              # 插件元数据
-├── package.json             # npm 包信息
+├── package.json             # npm 包信息 + omp manifest
 ├── tsconfig.json            # TypeScript 配置
 ├── src/
+│   ├── extension.ts         # Extension 入口，注册两个工具
 │   ├── auth.ts              # 从 omp agent.db 读取 kimi token
 │   ├── client.ts            # Kimi Code 网关 HTTP 客户端
 │   └── utils.ts             # 响应解析与文件落盘
-├── tools/
-│   ├── get-data-source-desc/     # get_data_source_desc 工具
-│   └── call-data-source-tool/    # call_data_source_tool 工具
 ├── skills/
 │   └── kimi-datasource/
 │       ├── SKILL.md         # 使用指南

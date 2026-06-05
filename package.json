@@ -9,11 +9,14 @@
     "url": "git+https://github.com/dlivxpr/kimi-datasource-for-omp.git"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "bun test tests/*.test.ts"
   },
   "devDependencies": {
-    "@sinclair/typebox": "^0.34.0",
     "@types/node": "^22.0.0",
     "typescript": "^5.7.0"
+  },
+  "omp": {
+    "extensions": ["./src/extension.ts"]
   }
 }

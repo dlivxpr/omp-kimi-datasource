@@ -1,6 +1,6 @@
-import { dirname } from "path";
+import { dirname, parse, resolve } from "path";
 import { mkdirSync, writeFileSync } from "fs";
-
+import type { Logger } from "@oh-my-pi/pi-coding-agent";
 export function extractText(response: unknown): string {
   if (typeof response === "string") {
     return response;
@@ -41,29 +41,64 @@ export function extractText(response: unknown): string {
   return JSON.stringify(response, null, 2);
 }
 
-export function writeFiles(response: unknown): void {
-  if (!response || typeof response !== "object") return;
+function allowedResponseFilePath(name: string, expectedOutputPath?: string): string | undefined {
+  if (!expectedOutputPath) return undefined;
+
+  const actual = resolve(name);
+  const expected = resolve(expectedOutputPath);
+  if (actual === expected) return actual;
+
+  const actualParts = parse(actual);
+  const expectedParts = parse(expected);
+  if (actualParts.dir !== expectedParts.dir) return undefined;
+  if (actualParts.ext !== expectedParts.ext) return undefined;
+  if (!actualParts.name.startsWith(`${expectedParts.name}_`)) return undefined;
+
+  return actual;
+}
+
+export function writeFiles(response: unknown, expectedOutputPath?: string, logger?: Logger): string[] {
+  const written: string[] = [];
+  if (!response || typeof response !== "object") return written;
 
   const files = (response as Record<string, unknown>).files as
     | Array<Record<string, unknown>>
     | undefined;
-  if (!files) return;
+  if (!files) return written;
 
   for (const f of files) {
     const name = f.name as string | undefined;
     const content = f.content as string | undefined;
     if (!name || content == null) continue;
 
+    const writePath = allowedResponseFilePath(name, expectedOutputPath);
+    if (!writePath) {
+      const msg = `跳过服务端返回的文件 ${name}：不在请求的输出路径范围内`;
+      if (logger) {
+        logger.warn(msg);
+      } else {
+        console.warn(`警告：${msg}`);
+      }
+      continue;
+    }
+
     try {
-      mkdirSync(dirname(name), { recursive: true });
+      mkdirSync(dirname(writePath), { recursive: true });
 
       if (f.encoding === "base64") {
-        writeFileSync(name, Buffer.from(content, "base64"));
+        writeFileSync(writePath, Buffer.from(content, "base64"));
       } else {
-        writeFileSync(name, content, "utf-8");
+        writeFileSync(writePath, content, "utf-8");
       }
+      written.push(writePath);
     } catch (e) {
-      console.warn(`警告：落盘 ${name} 失败：${e}`);
+      const msg = `落盘 ${writePath} 失败：${e instanceof Error ? e.message : String(e)}`;
+      if (logger) {
+        logger.warn(msg);
+      } else {
+        console.warn(`警告：${msg}`);
+      }
     }
   }
+  return written;
 }
