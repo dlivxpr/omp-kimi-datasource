@@ -2,90 +2,92 @@
 
 Kimi Code data-source plugin for [oh-my-pi](https://github.com/oh-my-pi/oh-my-pi).
 
-通过 Kimi Code 网关查询股票/财报、全球金融、宏观经济、中国企业工商信息、学术论文等外部数据。
+Query external data such as stock/finance, global markets, macroeconomics, Chinese enterprise registry, and academic papers through the Kimi Code gateway.
 
-上游官方实现：https://github.com/MoonshotAI/kimi-code/tree/main/plugins/official/kimi-datasource
+Upstream official implementation: https://github.com/MoonshotAI/kimi-code/tree/main/plugins/official/kimi-datasource
 
-## 支持的数据源
+> 🌐 [中文文档](README.zh-CN.md)
 
-| 能力域 | 数据源名 |
+## Supported Data Sources
+
+| Domain | Data Source Name |
 |---|---|
-| A股/港股/美股 行情和财务 | `stock_finance_data` |
-| Yahoo Finance 全球金融 | `yahoo_finance` |
-| 世界银行宏观经济 | `world_bank_open_data` |
-| 中国企业工商信息 | `tianyancha` |
-| arXiv 论文预印本 | `arxiv` |
-| Google Scholar 学术搜索 | `scholar` |
+| A-shares / HK / US stocks & financials | `stock_finance_data` |
+| Yahoo Finance global markets | `yahoo_finance` |
+| World Bank macroeconomics | `world_bank_open_data` |
+| Chinese enterprise registry | `tianyancha` |
+| arXiv preprints | `arxiv` |
+| Google Scholar academic search | `scholar` |
 
-## 安装
+## Installation
 
-### 本地开发/私有仓库（推荐）
+### Local / Private Repository (Recommended)
 
 ```bash
-# 克隆仓库
+# Clone the repo
 git clone https://github.com/dlivxpr/kimi-datasource-for-omp.git
 cd kimi-datasource-for-omp
 
-# 链接到 omp
-omp plugin link .
+# Install into omp
+omp plugin install .
 ```
 
+## Prerequisites
 
-## 前置条件
+This plugin reuses the Kimi subscription already configured in omp — **no extra API key is required**.
 
-本插件复用 omp 自身的 kimi 订阅，**无需额外配置 API key**。
-
-只需确保已通过 omp 登录 Kimi：
+Just make sure you are logged in to Kimi via omp:
 
 ```bash
 omp login kimi-code
 ```
-## 使用
 
-安装后，Claude 会在涉及外部数据查询时自动使用本插件的工具：
+## Usage
 
-1. **`get_data_source_desc(name)`** — 查询某个数据源的 API 文档
-2. **`call_data_source_tool(data_source_name, api_name, params)`** — 调用具体 API
+Once installed, Claude will automatically use this plugin's tools whenever external data queries are needed:
 
-标准工作流是先 `get_data_source_desc` 了解接口，再 `call_data_source_tool` 取数。
+1. **`get_data_source_desc(name)`** — Query a data source's API documentation.
+2. **`call_data_source_tool(data_source_name, api_name, params)`** — Call a specific API.
 
-详见 [`skills/kimi-datasource/SKILL.md`](skills/kimi-datasource/SKILL.md)。
+The standard workflow is: first call `get_data_source_desc` to learn the available interfaces, then call `call_data_source_tool` to fetch data.
 
-## 验收
+For details, see [`skills/kimi-datasource/SKILL.md`](skills/kimi-datasource/SKILL.md).
 
-安装完成后，确认插件已启用：
+## Verification
+
+After installation, confirm the plugin is enabled:
 
 ```bash
 omp plugin list
 ```
 
-启动 omp 后，模型应当可见 `get_data_source_desc` 和 `call_data_source_tool` 两个工具。
+When omp starts, the model should see both `get_data_source_desc` and `call_data_source_tool` tools.
 
-## 目录结构
+## Directory Structure
 
 ```
 .
-├── package.json             # npm 包信息 + omp manifest
-├── tsconfig.json            # TypeScript 配置
+├── package.json             # npm package info + omp manifest
+├── tsconfig.json            # TypeScript config
 ├── src/
-│   ├── extension.ts         # Extension 入口，注册两个工具
-│   ├── auth.ts              # 从 omp agent.db 读取 kimi token
-│   ├── client.ts            # Kimi Code 网关 HTTP 客户端
-│   └── utils.ts             # 响应解析与文件落盘
+│   ├── extension.ts         # Extension entry: registers both tools
+│   ├── auth.ts              # Reads Kimi token from omp agent.db
+│   ├── client.ts            # Kimi Code gateway HTTP client
+│   └── utils.ts             # Response parsing and file writing
 ├── skills/
 │   └── kimi-datasource/
-│       ├── SKILL.md         # 使用指南
-│       └── watchlist.json   # 用户自选股（可编辑）
+│       ├── SKILL.md         # Usage guide
+│       └── watchlist.json   # User watchlist (editable)
 └── README.md
 ```
 
-## 开发
+## Development
 
 ```bash
-# 安装依赖
+# Install dependencies
 bun install
 
-# 类型检查
+# Type check
 bun run typecheck
 ```
 

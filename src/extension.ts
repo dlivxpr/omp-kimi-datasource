@@ -6,16 +6,16 @@ import { extractText, writeFiles } from "./utils";
 export default function activate(pi: ExtensionAPI) {
   pi.registerTool({
     name: "get_data_source_desc",
-    label: "获取数据源描述",
+    label: "Describe Data Source",
     description:
-      "查询某个外部数据源能做什么，返回 Markdown 格式的 API 文档。" +
-      "在调用 call_data_source_tool 前，必须先调用此工具了解该数据源有哪些 API、每个 API 需要什么参数。" +
-      "支持的数据源包括：stock_finance_data（A股/港股/美股）、yahoo_finance（全球金融）、" +
-      "world_bank_open_data（宏观经济）、tianyancha（中国企业工商）、arxiv（论文预印本）、scholar（学术搜索）。" +
-      "本工具提供结构化、批量、领域专属的数据源 API 文档，不替代通用 Web 搜索或实时新闻。",
+      "Query what an external data source can do and return its API documentation in Markdown format. " +
+      "Before calling call_data_source_tool, you must use this tool first to learn which APIs the data source provides and what parameters each API requires. " +
+      "Supported data sources: stock_finance_data (A/HK/US stocks), yahoo_finance (global finance), " +
+      "world_bank_open_data (macroeconomics), tianyancha (Chinese enterprise registry), arxiv (preprints), scholar (academic search). " +
+      "This tool provides structured, batch, domain-specific data-source API docs; it does not replace general web search or real-time news.",
     parameters: pi.zod.object({
       name: pi.zod.string().describe(
-        "数据源名称，例如 'stock_finance_data'、'tianyancha'、'arxiv'、'scholar'、'yahoo_finance'、'world_bank_open_data'"
+        "Data source name, e.g. 'stock_finance_data', 'tianyancha', 'arxiv', 'scholar', 'yahoo_finance', 'world_bank_open_data'"
       ),
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
@@ -42,22 +42,22 @@ export default function activate(pi: ExtensionAPI) {
 
   pi.registerTool({
     name: "call_data_source_tool",
-    label: "调用数据源工具",
+    label: "Call Data Source",
     description:
-      "通过 Kimi Code 网关调用任意数据源的任意 API（含实时行情、历史数据、搜索等）。" +
-      "必须先调用 get_data_source_desc(name) 了解该数据源的 API 列表和参数要求，再构造此调用。" +
-      "params 中通常需要传 file_path（如 /tmp/xxx.csv），网关会把完整结果写入该路径。" +
-      "本工具提供结构化、批量、领域专属的数据查询，不替代通用 Web 搜索或实时新闻。",
+      "Invoke any API of any data source through the Kimi Code gateway (includes real-time quotes, historical data, search, etc.). " +
+      "You must first call get_data_source_desc(name) to learn the available APIs and their parameter schemas before constructing this call. " +
+      "The params object usually needs a file_path (e.g. /tmp/xxx.csv); the gateway writes the full result to that path. " +
+      "This tool provides structured, batch, domain-specific data queries; it does not replace general web search or real-time news.",
     parameters: pi.zod.object({
       data_source_name: pi.zod.string().describe(
-        "数据源名称，例如 'stock_finance_data'、'tianyancha'、'arxiv' 等"
+        "Data source name, e.g. 'stock_finance_data', 'tianyancha', 'arxiv', etc."
       ),
       api_name: pi.zod.string().describe(
-        "API 名称。不要凭记忆猜测，必须从 get_data_source_desc 返回的文档中获取"
+        "API name. Do not guess from memory; it must be obtained from the docs returned by get_data_source_desc."
       ),
       params: pi.zod.record(pi.zod.string(), pi.zod.unknown()).describe(
-        "传给该 API 的参数对象，键值对必须与 get_data_source_desc 文档中的 schema 一致。" +
-        "绝大多数 API 需要 file_path 参数，建议传绝对路径如 /tmp/<场景>_<时间戳>.csv"
+        "Parameter object for the API. Keys must match the schema in the get_data_source_desc docs. " +
+        "Most APIs require a file_path; use an absolute path like /tmp/<scenario>_<timestamp>.csv."
       ),
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
