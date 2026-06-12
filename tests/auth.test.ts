@@ -1,13 +1,25 @@
 import { describe, expect, test } from "bun:test";
-import { getKimiToken } from "../src/auth";
+import type { ExtensionContext } from "@oh-my-pi/pi-coding-agent";
+import { getKimiToken, KIMI_LOGIN_ERROR } from "../src/auth";
 
-type FakeContext = Parameters<typeof getKimiToken>[0];
+type GetApiKeyCall = {
+  provider: string;
+  sessionId: string;
+  options: { signal?: AbortSignal };
+};
+
+type FakeContext = ExtensionContext & {
+  calls: GetApiKeyCall[];
+};
 
 function fakeContext(token: string | undefined): FakeContext {
-  return {
+  const calls: GetApiKeyCall[] = [];
+  const context = {
+    calls,
     modelRegistry: {
       authStorage: {
-        async getApiKey() {
+        async getApiKey(provider: string, sessionId: string, options: { signal?: AbortSignal }) {
+          calls.push({ provider, sessionId, options });
           return token;
         },
       },
@@ -17,7 +29,8 @@ function fakeContext(token: string | undefined): FakeContext {
         return "session-id";
       },
     },
-  } as unknown as FakeContext;
+  };
+  return context as unknown as FakeContext;
 }
 
 describe("getKimiToken", () => {
@@ -25,9 +38,22 @@ describe("getKimiToken", () => {
     await expect(getKimiToken(fakeContext("omp-token"))).resolves.toBe("omp-token");
   });
 
-  test("缺少 omp kimi 认证时提示登录和订阅要求", async () => {
-    await expect(getKimiToken(fakeContext(undefined))).rejects.toThrow(
-      "请先运行 `omp login kimi-code` 登录，并确认账号拥有可用的 Kimi 订阅。"
-    );
+  test("缺少 omp kimi 认证时提示登录和环境变量要求", async () => {
+    await expect(getKimiToken(fakeContext(undefined))).rejects.toThrow(KIMI_LOGIN_ERROR);
+  });
+
+  test("传递 AbortSignal 到 authStorage", async () => {
+    const ctx = fakeContext("omp-token");
+    const controller = new AbortController();
+
+    await expect(getKimiToken(ctx, controller.signal)).resolves.toBe("omp-token");
+
+    expect(ctx.calls).toEqual([
+      {
+        provider: "kimi-code",
+        sessionId: "session-id",
+        options: { signal: controller.signal },
+      },
+    ]);
   });
 });

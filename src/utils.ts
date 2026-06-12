@@ -1,7 +1,9 @@
 import { dirname, parse, resolve } from "path";
 import { mkdirSync, writeFileSync } from "fs";
 import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
+import type { GatewayTrace } from "./client";
 type Logger = Pick<ExtensionAPI["logger"], "warn">;
+
 export function extractText(response: unknown): string {
   if (typeof response === "string") {
     return response;
@@ -40,6 +42,24 @@ export function extractText(response: unknown): string {
   }
 
   return JSON.stringify(response, null, 2);
+}
+
+export function appendTrace(text: string, trace?: GatewayTrace): string {
+  if (!trace?.toolCallId) return text;
+  if (trace.requestId) {
+    return `${text}\n\n[kimi-datasource] request-id: ${trace.requestId} · tool-call-id: ${trace.toolCallId}`;
+  }
+  return `${text}\n\n[kimi-datasource] tool-call-id: ${trace.toolCallId}`;
+}
+
+function outputPathField(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed || undefined;
+}
+
+export function expectedResponseFilePath(params: Record<string, unknown>): string | undefined {
+  return outputPathField(params.file_path) ?? outputPathField(params.filepath);
 }
 
 function allowedResponseFilePath(name: string, expectedOutputPath?: string): string | undefined {

@@ -2,7 +2,7 @@
 
 Kimi Code data-source plugin for [oh-my-pi](https://github.com/oh-my-pi/oh-my-pi).
 
-Query external data such as stock/finance, global markets, macroeconomics, Chinese enterprise registry, and academic papers through the Kimi Code gateway.
+Query external data such as stock/finance, global markets, macroeconomics, Chinese enterprise registry, academic papers, and legal data through the Kimi Code gateway.
 
 Upstream official implementation: https://github.com/MoonshotAI/kimi-code/tree/main/plugins/official/kimi-datasource
 
@@ -18,6 +18,7 @@ Upstream official implementation: https://github.com/MoonshotAI/kimi-code/tree/m
 | Chinese enterprise registry | `tianyancha` |
 | arXiv preprints | `arxiv` |
 | Google Scholar academic search | `scholar` |
+| Chinese laws, regulations, and judicial cases | `yuandian_law` |
 
 ## Installation
 

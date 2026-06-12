@@ -2,7 +2,7 @@
 
 Kimi Code data-source plugin for [oh-my-pi](https://github.com/oh-my-pi/oh-my-pi).
 
-通过 Kimi Code 网关查询股票/财报、全球金融、宏观经济、中国企业工商信息、学术论文等外部数据。
+通过 Kimi Code 网关查询股票/财报、全球金融、宏观经济、中国企业工商信息、学术论文、法律法规与司法案例等外部数据。
 
 上游官方实现：https://github.com/MoonshotAI/kimi-code/tree/main/plugins/official/kimi-datasource
 
@@ -16,6 +16,7 @@ Kimi Code data-source plugin for [oh-my-pi](https://github.com/oh-my-pi/oh-my-pi
 | 中国企业工商信息 | `tianyancha` |
 | arXiv 论文预印本 | `arxiv` |
 | Google Scholar 学术搜索 | `scholar` |
+| 中国法律法规与司法案例 | `yuandian_law` |
 
 ## 安装
 

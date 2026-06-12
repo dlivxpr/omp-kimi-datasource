@@ -1,7 +1,7 @@
 import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 import { getKimiToken } from "./auth";
-import { callGateway } from "./client";
-import { extractText, writeFiles } from "./utils";
+import { callGateway, GatewayError } from "./client";
+import { appendTrace, expectedResponseFilePath, extractText, writeFiles } from "./utils";
 
 export default function activate(pi: ExtensionAPI) {
   pi.registerTool({
@@ -11,30 +11,33 @@ export default function activate(pi: ExtensionAPI) {
       "Query what an external data source can do and return its API documentation in Markdown format. " +
       "Before calling call_data_source_tool, you must use this tool first to learn which APIs the data source provides and what parameters each API requires. " +
       "Supported data sources: stock_finance_data (A/HK/US stocks), yahoo_finance (global finance), " +
-      "world_bank_open_data (macroeconomics), tianyancha (Chinese enterprise registry), arxiv (preprints), scholar (academic search). " +
+      "world_bank_open_data (macroeconomics), tianyancha (Chinese enterprise registry), arxiv (preprints), scholar (academic search), " +
+      "yuandian_law (Chinese laws/regulations and judicial cases). " +
       "This tool provides structured, batch, domain-specific data-source API docs; it does not replace general web search or real-time news.",
     parameters: pi.zod.object({
       name: pi.zod.string().describe(
-        "Data source name, e.g. 'stock_finance_data', 'tianyancha', 'arxiv', 'scholar', 'yahoo_finance', 'world_bank_open_data'"
+        "Data source name, e.g. 'stock_finance_data', 'tianyancha', 'arxiv', 'scholar', 'yahoo_finance', 'world_bank_open_data', 'yuandian_law'"
       ),
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       try {
         const token = await getKimiToken(ctx, signal);
-        const response = await callGateway(
+        const { payload, trace } = await callGateway(
           token,
           "get_data_source_desc",
           { name: params.name },
           signal
         );
         return {
-          content: [{ type: "text" as const, text: extractText(response) }],
+          content: [{ type: "text" as const, text: appendTrace(extractText(payload), trace) }],
         };
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
+        const trace = err instanceof GatewayError ? err.trace : undefined;
         pi.logger.error("get_data_source_desc 失败", { message });
         return {
-          content: [{ type: "text" as const, text: `查询数据源描述失败：${message}` }],
+          content: [{ type: "text" as const, text: appendTrace(`查询数据源描述失败：${message}`, trace) }],
+          isError: true,
         };
       }
     },
@@ -50,7 +53,7 @@ export default function activate(pi: ExtensionAPI) {
       "This tool provides structured, batch, domain-specific data queries; it does not replace general web search or real-time news.",
     parameters: pi.zod.object({
       data_source_name: pi.zod.string().describe(
-        "Data source name, e.g. 'stock_finance_data', 'tianyancha', 'arxiv', etc."
+        "Data source name, e.g. 'stock_finance_data', 'tianyancha', 'arxiv', 'yuandian_law', etc."
       ),
       api_name: pi.zod.string().describe(
         "API name. Do not guess from memory; it must be obtained from the docs returned by get_data_source_desc."
@@ -63,7 +66,7 @@ export default function activate(pi: ExtensionAPI) {
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       try {
         const token = await getKimiToken(ctx, signal);
-        const response = await callGateway(
+        const { payload, trace } = await callGateway(
           token,
           "call_data_source_tool",
           {
@@ -74,9 +77,9 @@ export default function activate(pi: ExtensionAPI) {
           signal
         );
 
-        const expectedPath = params.params.file_path as string | undefined;
-        const writtenPaths = writeFiles(response, expectedPath, pi.logger);
-        let resultText = extractText(response);
+        const expectedPath = expectedResponseFilePath(params.params);
+        const writtenPaths = writeFiles(payload, expectedPath, pi.logger);
+        let resultText = extractText(payload);
 
         // 检查用户期望的 file_path 是否实际落盘
         if (expectedPath && !writtenPaths.includes(expectedPath)) {
@@ -95,13 +98,15 @@ export default function activate(pi: ExtensionAPI) {
         }
 
         return {
-          content: [{ type: "text" as const, text: resultText }],
+          content: [{ type: "text" as const, text: appendTrace(resultText, trace) }],
         };
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
+        const trace = err instanceof GatewayError ? err.trace : undefined;
         pi.logger.error("call_data_source_tool 失败", { message });
         return {
-          content: [{ type: "text" as const, text: `调用数据源工具失败：${message}` }],
+          content: [{ type: "text" as const, text: appendTrace(`调用数据源工具失败：${message}`, trace) }],
+          isError: true,
         };
       }
     },
