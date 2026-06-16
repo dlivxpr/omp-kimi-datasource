@@ -1,6 +1,6 @@
 # kimi-datasource-for-omp
 
-Kimi Code data-source plugin for [oh-my-pi](https://github.com/oh-my-pi/oh-my-pi).
+Kimi Code data-source plugin for [oh-my-pi](https://github.com/can1357/oh-my-pi).
 
 Query external data such as stock/finance, global markets, macroeconomics, Chinese enterprise registry, academic papers, and legal data through the Kimi Code gateway.
 
@@ -90,6 +90,9 @@ bun install
 
 # Type check
 bun run typecheck
+
+# Run tests
+bun test tests/*.test.ts
 ```
 
 ## License
