@@ -1,5 +1,5 @@
 ---
-name: kimi-datasource
+name: omp-kimi-datasource
 description: |
   结构化、批量、领域专属的数据源助手。当用户要查股票/财报/技术指标/全球宏观经济/中国企业工商/学术论文/中国法律法规与司法案例这类外部数据时，使用这个 skill。
   本 plugin 注册了两个工具：
@@ -10,7 +10,7 @@ compatibility:
   - call_data_source_tool
 ---
 
-# kimi-datasource — 结构化数据源助手
+# omp-kimi-datasource — 结构化数据源助手
 
 ## 1. 这个 skill 提供什么能力
 

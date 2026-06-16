@@ -1,4 +1,4 @@
-# kimi-datasource-for-omp
+# omp-kimi-datasource
 
 Kimi Code data-source plugin for [oh-my-pi](https://github.com/can1357/oh-my-pi).
 
@@ -24,8 +24,8 @@ Kimi Code data-source plugin for [oh-my-pi](https://github.com/can1357/oh-my-pi)
 
 ```bash
 # 克隆仓库
-git clone https://github.com/dlivxpr/kimi-datasource-for-omp.git
-cd kimi-datasource-for-omp
+git clone https://github.com/dlivxpr/omp-kimi-datasource.git
+cd omp-kimi-datasource
 
 # 安装到 omp
 omp plugin install .
@@ -50,7 +50,7 @@ omp login kimi-code
 
 标准工作流是先 `get_data_source_desc` 了解接口，再 `call_data_source_tool` 取数。
 
-详见 [`skills/kimi-datasource/SKILL.md`](skills/kimi-datasource/SKILL.md)。
+详见 [`skills/omp-kimi-datasource/SKILL.md`](skills/omp-kimi-datasource/SKILL.md)。
 
 ## 验收
 
@@ -74,7 +74,7 @@ omp plugin list
 │   ├── client.ts            # Kimi Code 网关 HTTP 客户端
 │   └── utils.ts             # 响应解析与文件落盘
 ├── skills/
-│   └── kimi-datasource/
+│   └── omp-kimi-datasource/
 │       ├── SKILL.md         # 使用指南
 │       └── watchlist.json   # 用户自选股（可编辑）
 └── README.md

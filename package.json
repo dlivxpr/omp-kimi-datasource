@@ -1,12 +1,12 @@
 {
-  "name": "kimi-datasource",
+  "name": "omp-kimi-datasource",
   "version": "1.0.0",
   "description": "Kimi Code data-source plugin for oh-my-pi: stock/finance, macro-economics, enterprise registry, academic papers, legal data",
   "keywords": ["omp", "oh-my-pi", "plugin", "kimi", "datasource"],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dlivxpr/kimi-datasource-for-omp.git"
+    "url": "git+https://github.com/dlivxpr/omp-kimi-datasource.git"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

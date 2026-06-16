@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "kimi-datasource-for-omp",
+      "name": "omp-kimi-datasource",
       "devDependencies": {
         "@oh-my-pi/pi-coding-agent": "^16.0.2",
         "@types/bun": "^1.3.14",

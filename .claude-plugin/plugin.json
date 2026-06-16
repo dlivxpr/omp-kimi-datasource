@@ -1,5 +1,5 @@
 {
-  "name": "kimi-datasource",
+  "name": "omp-kimi-datasource",
   "version": "1.0.0",
   "description": "Kimi Code data-source plugin for oh-my-pi: stock/finance, macro-economics, enterprise registry, academic papers, legal data",
   "author": "dlivxpr",

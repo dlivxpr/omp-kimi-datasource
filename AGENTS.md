@@ -1,4 +1,4 @@
-# kimi-datasource-for-omp 项目上下文
+# omp-kimi-datasource 项目上下文
 
 ## 项目定位
 
