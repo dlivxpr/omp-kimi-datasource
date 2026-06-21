@@ -22,7 +22,21 @@ Upstream official implementation: https://github.com/MoonshotAI/kimi-code/tree/m
 
 ## Installation
 
-### Local / Private Repository (Recommended)
+### Marketplace (recommended)
+
+```bash
+omp plugin marketplace add dlivxpr/omp-kimi-datasource
+omp plugin install omp-kimi-datasource@omp-kimi-datasource
+```
+
+For local testing before publishing:
+
+```bash
+omp plugin marketplace add .
+omp plugin install --force omp-kimi-datasource@omp-kimi-datasource
+```
+
+### Local development / npm-link style
 
 ```bash
 # Clone the repo
@@ -32,6 +46,10 @@ cd omp-kimi-datasource
 # Install into omp
 omp plugin install .
 ```
+
+This path uses `package.json#omp.extensions` directly.
+
+> **Note:** This repository intentionally ships `.omp-plugin/marketplace.json` only. It does not ship `.claude-plugin` metadata because the runtime tools require omp auth/session APIs and Claude Code cannot execute them.
 
 ## Prerequisites
 
@@ -70,11 +88,16 @@ When omp starts, the model should see both `get_data_source_desc` and `call_data
 .
 ├── package.json             # npm package info + omp manifest
 ├── tsconfig.json            # TypeScript config
+├── .omp-plugin/
+│   └── marketplace.json     # omp native marketplace catalog
 ├── src/
 │   ├── extension.ts         # Extension entry: registers both tools
+│   ├── tools.ts             # Shared tool definitions used by extension and marketplace
 │   ├── auth.ts              # Reads Kimi token from omp agent.db
 │   ├── client.ts            # Kimi Code gateway HTTP client
 │   └── utils.ts             # Response parsing and file writing
+├── tools/
+│   └── kimi-datasource.ts   # Marketplace custom-tool factory
 ├── skills/
 │   └── omp-kimi-datasource/
 │       ├── SKILL.md         # Usage guide

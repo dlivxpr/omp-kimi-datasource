@@ -20,7 +20,21 @@ Kimi Code data-source plugin for [oh-my-pi](https://github.com/can1357/oh-my-pi)
 
 ## 安装
 
-### 本地开发/私有仓库（推荐）
+### Marketplace（推荐）
+
+```bash
+omp plugin marketplace add dlivxpr/omp-kimi-datasource
+omp plugin install omp-kimi-datasource@omp-kimi-datasource
+```
+
+发布前本地测试：
+
+```bash
+omp plugin marketplace add .
+omp plugin install --force omp-kimi-datasource@omp-kimi-datasource
+```
+
+### 本地开发 / npm-link 方式
 
 ```bash
 # 克隆仓库
@@ -30,6 +44,10 @@ cd omp-kimi-datasource
 # 安装到 omp
 omp plugin install .
 ```
+
+该路径直接使用 `package.json#omp.extensions`。
+
+> **注意：** 本仓库只提供 `.omp-plugin/marketplace.json`，不附带 `.claude-plugin` 元数据，因为运行态工具依赖 omp 的认证/会话 API，Claude Code 无法执行。
 
 
 ## 前置条件
@@ -68,11 +86,16 @@ omp plugin list
 .
 ├── package.json             # npm 包信息 + omp manifest
 ├── tsconfig.json            # TypeScript 配置
+├── .omp-plugin/
+│   └── marketplace.json     # omp 原生 marketplace 目录
 ├── src/
 │   ├── extension.ts         # Extension 入口，注册两个工具
+│   ├── tools.ts             # extension 与 marketplace 共用的工具定义
 │   ├── auth.ts              # 从 omp agent.db 读取 kimi token
 │   ├── client.ts            # Kimi Code 网关 HTTP 客户端
 │   └── utils.ts             # 响应解析与文件落盘
+├── tools/
+│   └── kimi-datasource.ts   # Marketplace 自定义工具工厂
 ├── skills/
 │   └── omp-kimi-datasource/
 │       ├── SKILL.md         # 使用指南

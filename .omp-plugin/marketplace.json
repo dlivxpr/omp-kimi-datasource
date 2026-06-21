@@ -1,0 +1,28 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "omp-kimi-datasource",
+  "owner": {
+    "name": "dlivxpr"
+  },
+  "metadata": {
+    "description": "OMP-only marketplace for the Kimi Code data-source plugin",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "omp-kimi-datasource",
+      "description": "Query stock/finance, macroeconomics, enterprise registry, academic papers, and legal data through the Kimi Code gateway in oh-my-pi.",
+      "version": "1.0.0",
+      "author": {
+        "name": "dlivxpr"
+      },
+      "homepage": "https://github.com/dlivxpr/omp-kimi-datasource",
+      "repository": "https://github.com/dlivxpr/omp-kimi-datasource",
+      "license": "MIT",
+      "category": "data",
+      "tags": ["omp", "kimi", "datasource", "finance", "research", "law"],
+      "keywords": ["omp", "oh-my-pi", "plugin", "kimi", "datasource"],
+      "source": "./"
+    }
+  ]
+}
