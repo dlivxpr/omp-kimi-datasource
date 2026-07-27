@@ -29,6 +29,7 @@ type RegisteredTool = {
 
 type FakePi = ExtensionAPI & {
   tools: RegisteredTool[];
+  warnings: string[];
 };
 
 const originalFetch = globalThis.fetch;
@@ -41,6 +42,7 @@ function mockFetch(handler: typeof fetch): void {
 
 function fakePi(): FakePi {
   const tools: RegisteredTool[] = [];
+  const warnings: string[] = [];
   const schema = {
     describe() {
       return schema;
@@ -48,8 +50,12 @@ function fakePi(): FakePi {
   };
   const pi = {
     tools,
+    warnings,
     registerTool(tool: RegisteredTool) {
       tools.push(tool);
+    },
+    getAllTools() {
+      return tools.map((tool) => tool.name);
     },
     zod: {
       object() {
@@ -67,7 +73,9 @@ function fakePi(): FakePi {
     },
     logger: {
       error() {},
-      warn() {},
+      warn(message: string) {
+        warnings.push(message);
+      },
     },
   };
   return pi as unknown as FakePi;
@@ -76,10 +84,8 @@ function fakePi(): FakePi {
 function fakeContext(): ExtensionContext {
   const context = {
     modelRegistry: {
-      authStorage: {
-        async getApiKey() {
-          return "omp-token";
-        },
+      async getApiKeyForProvider() {
+        return "omp-token";
       },
     },
     sessionManager: {
@@ -105,6 +111,26 @@ afterEach(() => {
 });
 
 describe("activate", () => {
+  test("已存在同名工具时跳过注册并记录 warn", () => {
+    const pi = fakePi();
+    pi.tools.push({
+      name: "get_data_source_desc",
+      description: "pre-registered by marketplace custom-tool",
+      async execute() {
+        return { content: [] };
+      },
+    });
+
+    activate(pi);
+
+    const matching = pi.tools.filter((tool) => tool.name === "get_data_source_desc");
+    expect(matching).toHaveLength(1);
+    expect(matching[0]?.description).toBe("pre-registered by marketplace custom-tool");
+    expect(pi.tools.some((tool) => tool.name === "call_data_source_tool")).toBe(true);
+    expect(pi.warnings).toHaveLength(1);
+    expect(pi.warnings[0]).toContain("get_data_source_desc");
+  });
+
   test("注册的工具描述包含 yuandian_law", () => {
     const pi = fakePi();
 

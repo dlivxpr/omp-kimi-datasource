@@ -47,7 +47,7 @@ cd omp-kimi-datasource
 omp plugin install .
 ```
 
-This path uses `package.json#omp.extensions` directly.
+This path uses `package.json#omp.extensions` directly (loads `src/extension.ts`), whereas marketplace installs load the custom-tool factory `tools/kimi-datasource.ts`. If both entry points are ever active at once, the extension detects the already-registered tool names and skips re-registration, so the tools stay available exactly once.
 
 > **Note:** This repository intentionally ships `.omp-plugin/marketplace.json` only. It does not ship `.claude-plugin` metadata because the runtime tools require omp auth/session APIs and Claude Code cannot execute them.
 

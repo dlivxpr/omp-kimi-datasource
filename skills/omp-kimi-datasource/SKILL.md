@@ -5,9 +5,6 @@ description: |
   本 plugin 注册了两个工具：
   - `get_data_source_desc(name)`：查某个数据源能做什么，返回 Markdown 文档
   - `call_data_source_tool(data_source_name, api_name, params)`：实际调任意数据源的任意 API（含实时行情）
-compatibility:
-  - get_data_source_desc
-  - call_data_source_tool
 ---
 
 # omp-kimi-datasource — 结构化数据源助手

@@ -72,10 +72,8 @@ function fakePi(): CustomToolAPI {
 function fakeContext(): CustomToolContext {
   return {
     modelRegistry: {
-      authStorage: {
-        async getApiKey() {
-          return "omp-token";
-        },
+      async getApiKeyForProvider() {
+        return "omp-token";
       },
     },
     sessionManager: {

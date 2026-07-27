@@ -2,26 +2,24 @@ import { describe, expect, test } from "bun:test";
 import type { ExtensionContext } from "@oh-my-pi/pi-coding-agent";
 import { getKimiToken, KIMI_LOGIN_ERROR } from "../src/auth";
 
-type GetApiKeyCall = {
+type GetApiKeyForProviderCall = {
   provider: string;
   sessionId: string;
   options: { signal?: AbortSignal };
 };
 
 type FakeContext = ExtensionContext & {
-  calls: GetApiKeyCall[];
+  calls: GetApiKeyForProviderCall[];
 };
 
 function fakeContext(token: string | undefined): FakeContext {
-  const calls: GetApiKeyCall[] = [];
+  const calls: GetApiKeyForProviderCall[] = [];
   const context = {
     calls,
     modelRegistry: {
-      authStorage: {
-        async getApiKey(provider: string, sessionId: string, options: { signal?: AbortSignal }) {
-          calls.push({ provider, sessionId, options });
-          return token;
-        },
+      async getApiKeyForProvider(provider: string, sessionId: string, options: { signal?: AbortSignal }) {
+        calls.push({ provider, sessionId, options });
+        return token;
       },
     },
     sessionManager: {
@@ -34,7 +32,7 @@ function fakeContext(token: string | undefined): FakeContext {
 }
 
 describe("getKimiToken", () => {
-  test("读取 omp authStorage 中的 kimi-code token", async () => {
+  test("读取 omp 凭证中的 kimi-code token", async () => {
     await expect(getKimiToken(fakeContext("omp-token"))).resolves.toBe("omp-token");
   });
 
@@ -42,7 +40,7 @@ describe("getKimiToken", () => {
     await expect(getKimiToken(fakeContext(undefined))).rejects.toThrow(KIMI_LOGIN_ERROR);
   });
 
-  test("传递 AbortSignal 到 authStorage", async () => {
+  test("传递 AbortSignal 到 modelRegistry", async () => {
     const ctx = fakeContext("omp-token");
     const controller = new AbortController();
 

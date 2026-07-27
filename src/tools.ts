@@ -1,4 +1,4 @@
-import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
+import type { CustomToolContext, ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 import type { ZodType } from "zod/v4";
 import { getKimiToken } from "./auth";
 import { callGateway, GatewayError } from "./client";
@@ -6,16 +6,7 @@ import { appendTrace, expectedResponseFilePath, extractText, writeFiles } from "
 
 export type KimiToolLogger = Pick<ExtensionAPI["logger"], "error" | "warn">;
 
-export type KimiToolContext = {
-  modelRegistry: {
-    authStorage: {
-      getApiKey(provider: string, sessionId: string, options: { signal?: AbortSignal }): Promise<string | undefined>;
-    };
-  };
-  sessionManager: {
-    getSessionId(): string;
-  };
-};
+export type KimiToolContext = Pick<CustomToolContext, "modelRegistry" | "sessionManager">;
 
 export interface KimiToolParameters extends ZodType {}
 
