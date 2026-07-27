@@ -19,9 +19,9 @@ describe("package manifest", () => {
     expect(pkg.pi).toBeUndefined();
   });
 
-  it("package.json 使用 omp 16 类型依赖", () => {
+  it("package.json 使用 omp 17 类型依赖", () => {
     const dep = pkg.devDependencies?.["@oh-my-pi/pi-coding-agent"];
-    expect(dep).toMatch(/^\^16\./);
+    expect(dep).toMatch(/^\^17\./);
   });
 
   it("package/marketplace/skill 使用统一项目名", () => {
