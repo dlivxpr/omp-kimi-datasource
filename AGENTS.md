@@ -79,3 +79,18 @@ omp login kimi-code
 - 保持工具描述明确区分结构化/批量/领域数据查询与通用搜索。
 - 保持 `get_data_source_desc` → `call_data_source_tool` 的两步工作流。
 - 不添加兼容别名、旧协议分支或未被测试覆盖的兜底路径。
+
+## Agent skills
+
+### Issue tracker
+
+Issue 与 PRD 使用本仓库的 GitHub Issues 管理，通过 `gh` CLI 操作。详见 `docs/agents/issue-tracker.md`。
+
+### Triage labels
+
+使用五个 canonical triage role，标签字符串与 role 同名：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。详见 `docs/agents/triage-labels.md`。
+
+### Domain docs
+
+Single-context 布局：仓库根目录的 `CONTEXT.md` 和 `docs/adr/` 目录下的 ADR。详见 `docs/agents/domain.md`。
+
