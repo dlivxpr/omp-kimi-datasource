@@ -77,7 +77,7 @@ describe("callGateway", () => {
     expect(requestBody).not.toHaveProperty("arguments");
     expect(headerValue(requestHeaders, "Authorization")).toBe("Bearer fake-token");
     expect(headerValue(requestHeaders, "X-Msh-Platform")).toBe("kimi-code-cli");
-    expect(headerValue(requestHeaders, "User-Agent")).toBe("kimi-datasource/3.2.0");
+    expect(headerValue(requestHeaders, "User-Agent")).toBe("kimi-datasource/3.3.0");
     expect(result.payload).toEqual({ result: { assistant: [{ type: "text", text: "数据源描述结果" }] } });
     expect(result.trace.requestId).toBe("req-1");
     expect(result.trace.toolCallId).toBe(headerValue(requestHeaders, "X-Msh-Tool-Call-Id"));
@@ -194,7 +194,7 @@ describe("callGateway", () => {
       throw new Error("Expected callGateway to throw");
     } catch (err) {
       expect(err).toBeInstanceOf(GatewayError);
-      expect(err).toHaveProperty("message", 'Kimi API 错误: 401 Unauthorized {"error":{"message":"invalid authentication"}}');
+      expect(err).toHaveProperty("message", "access_token was rejected");
       expect((err as GatewayError).trace?.requestId).toBe("trace-401");
       expect((err as GatewayError).trace?.toolCallId).toBeString();
     }

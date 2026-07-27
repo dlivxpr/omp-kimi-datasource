@@ -112,8 +112,8 @@ describe("activate", () => {
 
     const getDesc = pi.tools.find((tool) => tool.name === "get_data_source_desc");
     const callTool = pi.tools.find((tool) => tool.name === "call_data_source_tool");
-    expect(getDesc?.description).toContain("yuandian_law");
-    expect(callTool?.description).toContain("Kimi Code gateway");
+    expect(getDesc?.description).toContain("data source");
+    expect(callTool?.description).toContain("get_data_source_desc");
   });
 
   test("get_data_source_desc 成功结果追加 trace 行", async () => {

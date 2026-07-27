@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { arch, homedir, hostname, platform, release, version } from "os";
 import { dirname, join } from "path";
 
-const CLIENT_VERSION = "3.2.0";
+const CLIENT_VERSION = "3.3.0";
 const REQUEST_TIMEOUT_MS = 30_000;
 
 export type GatewayTrace = {
@@ -128,6 +128,7 @@ export async function callGateway(
   tool: string,
   arguments_: Record<string, unknown>,
   signal?: AbortSignal,
+  refreshToken?: () => Promise<string>,
 ): Promise<GatewayResult> {
   if (tool !== "get_data_source_desc" && tool !== "call_data_source_tool") {
     throw new Error(`未知工具: ${tool}`);
@@ -149,30 +150,47 @@ export async function callGateway(
   }
 
   try {
-    const response = await fetch(datasourceApiUrl(), {
-      method: "POST",
-      headers: buildHeaders(token, toolCallId),
-      body: JSON.stringify({ method: tool, params: arguments_ }),
-      signal: controller.signal,
-    });
+    let currentToken = token;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const response = await fetch(datasourceApiUrl(), {
+        method: "POST",
+        headers: buildHeaders(currentToken, toolCallId),
+        body: JSON.stringify({ method: tool, params: arguments_ }),
+        signal: controller.signal,
+      });
 
-    trace.requestId = responseRequestId(response.headers);
-    const text = await response.text();
+      trace.requestId = responseRequestId(response.headers);
+      const text = await response.text();
 
-    if (!response.ok) {
-      throw new GatewayError(
-        `Kimi API 错误: ${response.status} ${response.statusText} ${text.slice(0, 200)}`,
-        trace,
-      );
+      if (response.status === 401 && attempt === 0 && refreshToken) {
+        const newToken = await refreshToken();
+        if (newToken && newToken !== currentToken) {
+          currentToken = newToken;
+          continue;
+        }
+      }
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new GatewayError("access_token was rejected", trace);
+        }
+        throw new GatewayError(
+          `Kimi API 错误: ${response.status} ${response.statusText} ${text.slice(0, 200)}`,
+          trace,
+        );
+      }
+
+      const payload = parseResponseBody(text);
+      const errorMessage = topLevelErrorMessage(payload);
+      if (errorMessage) {
+        throw new GatewayError(`Kimi API 返回错误: ${errorMessage}`, trace);
+      }
+
+      return { payload, trace };
     }
 
-    const payload = parseResponseBody(text);
-    const errorMessage = topLevelErrorMessage(payload);
-    if (errorMessage) {
-      throw new GatewayError(`Kimi API 返回错误: ${errorMessage}`, trace);
-    }
-
-    return { payload, trace };
+    // Unreachable: loop either returns or throws
+    throw new GatewayError("access_token was rejected", trace);
   } catch (err) {
     if (timedOut) {
       throw new GatewayError("Request timed out after 30 seconds.", trace);

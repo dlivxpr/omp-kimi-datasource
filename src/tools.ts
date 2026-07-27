@@ -41,15 +41,21 @@ export function createKimiDatasourceTools(
       name: "get_data_source_desc",
       label: "Describe Data Source",
       description:
-        "Query what an external data source can do and return its API documentation in Markdown format. " +
-        "Before calling call_data_source_tool, you must use this tool first to learn which APIs the data source provides and what parameters each API requires. " +
-        "Supported data sources: stock_finance_data (A/HK/US stocks), yahoo_finance (global finance), " +
-        "world_bank_open_data (macroeconomics), tianyancha (Chinese enterprise registry), arxiv (preprints), scholar (academic search), " +
-        "yuandian_law (Chinese laws/regulations and judicial cases). " +
+        "Get the current API documentation for one Kimi data source before calling a specific API. " +
+        "For a simple lookup, choose exactly one specialized source; do not inspect fallback or comparison sources unless the user explicitly asks for a cross-source comparison. " +
         "This tool provides structured, batch, domain-specific data-source API docs; it does not replace general web search or real-time news.",
       parameters: pi.zod.object({
         name: pi.zod.string().describe(
-          "Data source name, e.g. 'stock_finance_data', 'tianyancha', 'arxiv', 'scholar', 'yahoo_finance', 'world_bank_open_data', 'yuandian_law'"
+          "Data source name. Must be one of: stock_finance_data, yahoo_finance, world_bank_open_data, " +
+          "tianyancha, arxiv, scholar, yuandian_law, wind, imf, gildata, sec_edgar, sp_data. " +
+          "Capabilities: stock_finance_data / yahoo_finance = general quotes and financials " +
+          "(yahoo_finance FX history is limited to about 2 years); world_bank_open_data = historical macro; " +
+          "imf = FX rates, CPI, GDP forecasts, balance of payments; tianyancha = CN company registry; " +
+          "arxiv / scholar = papers; yuandian_law = CN laws and cases; " +
+          "wind = A-share intraday minute series, funds, bonds (map PE/PB/ROE-style field names via wind_search_fields first); " +
+          "gildata = natural-language stock/fund screening; " +
+          "sec_edgar = US filings (10-K/10-Q, S-1, Form 4, 13F, 8-K); " +
+          "sp_data = S&P fundamentals (consensus estimates, valuation ratios, transcripts)."
         ),
       }),
       async execute(_toolCallId, params, signal, ctx) {
@@ -60,6 +66,7 @@ export function createKimiDatasourceTools(
             "get_data_source_desc",
             { name: (params as Record<string, unknown>).name },
             signal,
+            () => getKimiToken(ctx, signal),
           );
           return {
             content: [{ type: "text" as const, text: appendTrace(extractText(payload), trace) }],
@@ -79,13 +86,15 @@ export function createKimiDatasourceTools(
       name: "call_data_source_tool",
       label: "Call Data Source",
       description:
-        "Invoke any API of any data source through the Kimi Code gateway (includes real-time quotes, historical data, search, etc.). " +
-        "You must first call get_data_source_desc(name) to learn the available APIs and their parameter schemas before constructing this call. " +
-        "The params object usually needs a file_path (e.g. /tmp/xxx.csv); the gateway writes the full result to that path. " +
+        "Dispatch one call to the data source selected for the user's request. " +
+        "Always call get_data_source_desc(name) first, then use an api_name and params from that description. " +
+        "For a simple lookup, use one specialized source and stop after its first successful result; " +
+        "do not query fallback or comparison sources unless the user explicitly asks for a cross-source comparison. " +
+        "When the user names a data source, use that source. " +
         "This tool provides structured, batch, domain-specific data queries; it does not replace general web search or real-time news.",
       parameters: pi.zod.object({
         data_source_name: pi.zod.string().describe(
-          "Data source name, e.g. 'stock_finance_data', 'tianyancha', 'arxiv', 'yuandian_law', etc."
+          "The data source selected via get_data_source_desc. When the user names a source, pass that source."
         ),
         api_name: pi.zod.string().describe(
           "API name. Do not guess from memory; it must be obtained from the docs returned by get_data_source_desc."
@@ -112,6 +121,7 @@ export function createKimiDatasourceTools(
               params: typedParams.params,
             },
             signal,
+            () => getKimiToken(ctx, signal),
           );
 
           const expectedPath = expectedResponseFilePath(typedParams.params ?? {});
