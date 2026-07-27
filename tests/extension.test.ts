@@ -55,7 +55,7 @@ function fakePi(): FakePi {
       tools.push(tool);
     },
     getAllTools() {
-      return tools.map((tool) => tool.name);
+      throw new Error("Extension runtime not initialized. Action methods cannot be called during extension loading.");
     },
     zod: {
       object() {
@@ -111,24 +111,13 @@ afterEach(() => {
 });
 
 describe("activate", () => {
-  test("已存在同名工具时跳过注册并记录 warn", () => {
+  test("加载阶段不调用 action 方法，直接注册两个工具", () => {
     const pi = fakePi();
-    pi.tools.push({
-      name: "get_data_source_desc",
-      description: "pre-registered by marketplace custom-tool",
-      async execute() {
-        return { content: [] };
-      },
-    });
 
     activate(pi);
 
-    const matching = pi.tools.filter((tool) => tool.name === "get_data_source_desc");
-    expect(matching).toHaveLength(1);
-    expect(matching[0]?.description).toBe("pre-registered by marketplace custom-tool");
-    expect(pi.tools.some((tool) => tool.name === "call_data_source_tool")).toBe(true);
-    expect(pi.warnings).toHaveLength(1);
-    expect(pi.warnings[0]).toContain("get_data_source_desc");
+    expect(pi.tools.map((tool) => tool.name)).toEqual(["get_data_source_desc", "call_data_source_tool"]);
+    expect(pi.warnings).toHaveLength(0);
   });
 
   test("注册的工具描述包含 yuandian_law", () => {
