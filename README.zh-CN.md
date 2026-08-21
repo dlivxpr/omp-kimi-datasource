@@ -1,8 +1,8 @@
 # omp-kimi-datasource
 
-[oh-my-pi](https://github.com/can1357/oh-my-pi) 的 Kimi Code 数据源插件，已同步上游 kimi-datasource **3.3.0**。
+[oh-my-pi](https://github.com/can1357/oh-my-pi) 的 Kimi Code 数据源插件，已同步上游 kimi-datasource **3.4.0**。
 
-通过 Kimi Code 网关查询 12 个外部数据源：股票/财报、全球金融、宏观经济、智能筛选、SEC 披露、中国企业工商信息、学术论文、法律法规与司法案例。
+通过 Kimi Code 网关查询 25 个外部数据源：股票/财报、全球金融、宏观经济（世行/IMF/FRED/国家统计局）、中国政府开放数据目录、国家与行业标准、国际组织公开库（WHO/FAO/UNSD/ECB/Eurostat/UNICEF/OECD）、智能筛选、SEC 披露、中国企业工商信息、学术论文、法律法规与司法案例、新华财经与财新资讯。
 
 上游官方实现：https://github.com/MoonshotAI/kimi-code/tree/main/plugins/official/kimi-datasource
 
@@ -20,12 +20,25 @@
 | 恒生聚源智能筛选 | `gildata` | 自然语言选股 / 选基金 / 基金经理筛选 |
 | 美股 SEC 披露文件 | `sec_edgar` | 10-K / 10-Q、S-1、Form 4、13F、8-K |
 | S&P Capital IQ 美股基本面 | `sp_data` | 一致预期、估值比率、业绩会纪要 |
+| 中国政府开放数据目录 | `china_nda` | 国家数据局公共数据资源登记目录、各省开放数据平台数据集检索 |
+| 国家统计局宏观指标 | `china_nbs` | 国家统计局官方口径指标序列（全国/省/主要城市历年 GDP/CPI/PPI/就业） |
+| 中国标准查询 | `china_standards` | GB 国家标准、HB 行业标准、DB 地方标准、TT 团体标准全文与状态 |
+| 世界卫生组织公开数据 | `who` | 全球健康数据、婴儿死亡率、各国人均预期寿命 |
+| 联合国粮农组织数据 | `fao` | 各国粮食产量、农产品价格指数、农业资源统计 |
+| 联合国统计司 UNdata | `unsd` | 联合国成员国统计年鉴、国际贸易与人口统计 |
+| 欧洲中央银行统计 | `ecb` | 欧元区基准利率、欧元区货币供应量 M1/M2/M3 |
+| 欧盟统计局数据 | `eurostat` | 欧盟成员国失业率、欧元区 HICP 通胀率 |
+| 联合国儿童基金会数据 | `unicef` | 全球儿童营养状况、基础教育与疫苗接种率 |
+| 经合组织 OECD 数据 | `oecd` | OECD 国家 GDP 对比、教育支出、劳动力市场指标 |
+| FRED 宏观经济数据 | `fred` | 美联储圣路易斯分行宏观序列（美国 CPI 长序列、联邦基金利率、失业率） |
+| 新华财经资讯与公告 | `xhcj` | 新华财经 (CNFIC) 7x24 实时快讯、A股上市公司公告、宏观与行业政策 |
+| 财新数据库 | `caixin` | 覆盖 600+ 财新数据接口（先用 `caixin_api_search` 发现接口） |
 | 中国企业工商信息 | `tianyancha` | 股东、司法风险、专利 |
 | arXiv 论文预印本 | `arxiv` | 论文搜索与下载 |
 | Google Scholar 学术搜索 | `scholar` | 作者论文、高引文献 |
 | 中国法律法规与司法案例 | `yuandian_law` | 法条与判例查询 |
 
-这些工具提供结构化、批量、领域专属的数据查询，不替代通用 Web 搜索或实时新闻。
+这些工具提供结构化、批量、领域专属的数据查询，不替代通用 Web 搜索或 xhcj / caixin 覆盖范围之外的实时新闻。
 
 ## 安装
 
@@ -77,7 +90,7 @@ omp login kimi-code
 1. **`get_data_source_desc(name)`** — 查询某个数据源当前的 API 文档
 2. **`call_data_source_tool(data_source_name, api_name, params)`** — 调用具体 API
 
-标准工作流是先 `get_data_source_desc` 了解接口，再 `call_data_source_tool` 取数。简单查询只选一个最匹配的数据源，成功返回后即停止；只有用户明确要求跨源对比时才查询第二个数据源。
+标准工作流是先 `get_data_source_desc` 了解接口，再 `call_data_source_tool` 取数。简单查询只选一个最匹配的数据源，结果覆盖用户问题后即停止；只有用户明确要求跨源对比时才查询第二个数据源。
 
 详见 [`skills/omp-kimi-datasource/SKILL.md`](skills/omp-kimi-datasource/SKILL.md)。
 

@@ -1,17 +1,17 @@
 ---
 name: omp-kimi-datasource
 description: |
-  结构化、批量、领域专属的数据源助手。当用户要查股票/财报/技术指标/全球宏观经济/中国企业工商/学术论文/中国法律法规与司法案例这类外部数据时，使用这个 skill。
+  结构化、批量、领域专属的数据源助手。当用户要查股票/财报/技术指标/Wind/美股SEC披露/S&P基本面/全球宏观经济(世行/IMF/FRED/国家统计局)/中国政府开放数据/国家标准与行业标准/WHO/FAO/OECD/中国企业工商/学术论文/中国法律法规与司法案例/新华财经与财新资讯这类外部数据时，使用这个 skill。
   本 plugin 注册了两个工具：
   - `get_data_source_desc(name)`：查某个数据源能做什么，返回 Markdown 文档
-  - `call_data_source_tool(data_source_name, api_name, params)`：实际调任意数据源的任意 API（含实时行情）
+  - `call_data_source_tool(data_source_name, api_name, params)`：按文档调用具体数据源 API（含实时行情）
 ---
 
 # omp-kimi-datasource — 结构化数据源助手
 
 ## 1. 这个 skill 提供什么能力
 
-本 plugin 后面挂了 12 个外部数据源。每一行的"数据源名"就是你后续传给 `get_data_source_desc(name=...)` 的参数。
+本 plugin 后面挂了 25 个外部数据源。每一行的"数据源名"就是你后续传给 `get_data_source_desc(name=...)` 的参数。
 
 | 能力域 | 数据源名 | 典型问题 |
 |---|---|---|
@@ -27,6 +27,19 @@ description: |
 | **恒生聚源智能筛选** | `gildata` | "筛选净利润增速超 30% 且 ROE 大于 15% 的股票"、"基金经理筛选" |
 | **美股 SEC 披露文件** | `sec_edgar` | "特斯拉 10-K 年报"、"苹果 10-Q 季报"、"Form 4 内部人交易"、"13F 机构持仓" |
 | **S&P Capital IQ 美股基本面** | `sp_data` | "苹果分析师一致预期"、"美股估值比率对比"、"竞争对手关系" |
+| **中国政府开放数据目录** | `china_nda` | "国家数据局公共数据资源登记目录"、"查询浙江省公共数据开放平台有哪些数据集" |
+| **国家统计局宏观指标** | `china_nbs` | "国家统计局历年 GDP 官方数据"、"全国月度 CPI/PPI 走势"、"各省历年城镇就业人数" |
+| **中国标准查询** | `china_standards` | "GB/T 19001 最新版标准文本"、"汽车行业标准 QC/T 现行状态"、"DB11 地方标准" |
+| **世界卫生组织公开数据** | `who` | "全球各国人均预期寿命"、"全球婴儿死亡率统计"、"WHO 疫苗接种覆盖率" |
+| **联合国粮农组织数据** | `fao` | "全球小麦产量趋势"、"各国农产品价格指数"、"全球耕地面积统计" |
+| **联合国统计司 UNdata** | `unsd` | "联合国成员国统计年鉴数据"、"全球国际贸易统计"、"各国人口统计" |
+| **欧洲中央银行统计** | `ecb` | "欧洲央行主要再融资利率"、"欧元区 M1/M2/M3 货币供应量" |
+| **欧盟统计局数据** | `eurostat` | "欧盟各成员国失业率"、"欧元区调和消费者物价指数 (HICP)" |
+| **联合国儿童基金会数据** | `unicef` | "全球儿童营养不良率"、"各国儿童失学率统计"、"儿童麻疹疫苗接种率" |
+| **经合组织 OECD 数据** | `oecd` | "OECD 成员国人均 GDP 对比"、"各国公共教育支出占 GDP 比重"、"劳动力市场数据" |
+| **FRED 宏观经济数据** | `fred` | "美国长周期 CPI 指数"、"美联储联邦基金有效利率 (EFFR)"、"美国失业率走势" |
+| **新华财经资讯与公告** | `xhcj` | "新华财经 7x24 快讯"、"A股上市公司最新公告"、"最新宏观与产业政策解读" |
+| **财新数据库** | `caixin` | "财新数据接口查询"、"财新专有高频金融数据库取数" |
 
 ### 选源原则
 
@@ -42,8 +55,12 @@ description: |
 - `world_bank_open_data` 是 50 年以上的历史宏观序列；要 IMF 的预测值用 `imf`
 - `gildata` 的查询输入是自然语言条件（选股 / 选基金 / 基金经理筛选），`tianyancha` 是企业工商档案
 - `wind` 的 `indexes`/`indicators` 参数要求 Wind 原生字段名；PE/PB/ROE/总市值这类常用字段先调 `wind_search_fields` 映射（支持别名和中文，一次查一个），不要硬猜字段名
+- **中国官方宏观口径划分**：`china_nbs` 是国家统计局宏观指标时间序列（GDP/CPI/PPI 等，全国/省/主要城市），`china_nda` 是国家数据局开放数据目录（回答“有哪些数据集可用”）；`world_bank_open_data` 和 `imf` 属于国际口径
+- **国际组织数据源直接路由**：WHO、FAO、UNSD、ECB、Eurostat、UNICEF、OECD、FRED 各自作为独立数据源直接按机构名称选用；IMF 自有数据（汇率/CPI/预测）走 `imf`
+- **标准与法律严格区分**：国家标准（GB）、行业标准（HB）、地方标准（DB）、团体标准（TT）使用 `china_standards`；法律法规与司法判例使用 `yuandian_law`，两者不得混淆
+- **资讯与动态接口发现**：新华财经（`xhcj`）侧重公告、快讯与政策；`caixin` 覆盖 600+ 接口，必须先调用 `caixin_api_search` 发现可用接口后再取数
 
-**不支持的能力**：通用 Web 搜索 / 实时新闻。问到这类问题，告诉用户当前数据源不覆盖。
+**不支持的能力**：通用 Web 搜索，以及 xhcj / caixin 覆盖范围之外的实时新闻。问到这类问题，告诉用户当前数据源不覆盖。
 
 ## 2. 标准工作流：`get_data_source_desc` → `call_data_source_tool`
 
@@ -56,7 +73,7 @@ description: |
      - 该数据源整体说明 (含 ticker 格式、全局约束)
      - 每个 API 的描述 / 必填参数 / 可选参数 / 默认值 / 取值范围
 4. 选最匹配的 API，按文档拼 params
-5. 调 call_data_source_tool(data_source_name=<...>, api_name=<...>, params={...})；结果成功且已经覆盖问题时停止调用
+5. 调 call_data_source_tool(data_source_name=<...>, api_name=<...>, params={...})；结果成功且已经覆盖问题时停止调用。注意：caixin_api_search、wind_search_fields、tianyancha 公司搜索等前置发现类调用不受单次调用限制，需继续调至真正的取数 API
 6. 读返回结果，用用户提问时使用的语言回答
 ```
 

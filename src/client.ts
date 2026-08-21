@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { arch, homedir, hostname, platform, release, version } from "os";
 import { dirname, join } from "path";
 
-const CLIENT_VERSION = "3.3.0";
+const CLIENT_VERSION = "3.4.0";
 const REQUEST_TIMEOUT_MS = 30_000;
 
 export type GatewayTrace = {

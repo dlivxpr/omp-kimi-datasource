@@ -98,11 +98,13 @@ afterEach(() => {
 });
 
 describe("custom tool factory", () => {
-  test("工厂返回两个指定名字的工具", () => {
+  test("工厂返回两个指定名字的工具并包含最新描述", () => {
     const tools = factory(fakePi()) as CustomTool[];
 
     expect(tools).toHaveLength(2);
     expect(tools.map((t) => t.name)).toEqual(["get_data_source_desc", "call_data_source_tool"]);
+    const callTool = tools.find((t) => t.name === "call_data_source_tool");
+    expect(callTool?.description).toContain("stop once a result covers the user's question;");
   });
 
   test("get_data_source_desc 自定义工具成功结果追加 trace 行", async () => {

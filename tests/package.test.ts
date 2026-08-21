@@ -24,20 +24,64 @@ describe("package manifest", () => {
     expect(dep).toMatch(/^\^17\./);
   });
 
-  it("package/marketplace/skill 使用统一项目名", () => {
+  it("package/marketplace/skill 使用统一项目名与 1.2.0 版本", () => {
     expect(pkg.name).toBe(PROJECT_NAME);
+    expect(pkg.version).toBe("1.2.0");
     expect(pkg.repository?.url).toBe(`git+https://github.com/dlivxpr/${PROJECT_NAME}.git`);
     expect(marketplace.name).toBe(PROJECT_NAME);
+    expect(marketplace.metadata?.version).toBe("1.2.0");
     expect(marketplace.owner?.name).toBe("dlivxpr");
     expect(marketplace.plugins).toHaveLength(1);
     expect(marketplace.plugins[0]).toEqual(expect.objectContaining({
       name: PROJECT_NAME,
-      version: pkg.version,
+      version: "1.2.0",
       source: "./",
       repository: `https://github.com/dlivxpr/${PROJECT_NAME}`,
     }));
     expect(existsSync(new URL("../.claude-plugin/plugin.json", import.meta.url))).toBe(false);
     expect(skillGuide).toContain(`name: ${PROJECT_NAME}`);
     expect(skillGuide).toContain(`# ${PROJECT_NAME} — 结构化数据源助手`);
+  });
+
+  it("SKILL.md 覆盖全部 25 个数据源与关键边界规则", () => {
+    expect(skillGuide).toContain("25 个外部数据源");
+    const expectedSources = [
+      "stock_finance_data",
+      "yahoo_finance",
+      "world_bank_open_data",
+      "tianyancha",
+      "arxiv",
+      "scholar",
+      "yuandian_law",
+      "wind",
+      "imf",
+      "gildata",
+      "sec_edgar",
+      "sp_data",
+      "china_nda",
+      "china_nbs",
+      "china_standards",
+      "who",
+      "fao",
+      "unsd",
+      "ecb",
+      "eurostat",
+      "unicef",
+      "oecd",
+      "fred",
+      "xhcj",
+      "caixin",
+    ];
+
+    for (const source of expectedSources) {
+      expect(skillGuide).toContain(`\`${source}\``);
+    }
+
+    expect(skillGuide).toContain("china_nbs");
+    expect(skillGuide).toContain("china_nda");
+    expect(skillGuide).toContain("china_standards");
+    expect(skillGuide).toContain("caixin_api_search");
+    expect(skillGuide).toContain("wind_search_fields");
+    expect(skillGuide).toContain("不受单次调用限制");
   });
 });

@@ -1,5 +1,4 @@
-import type { CustomToolContext, ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
-import type { ZodType } from "zod/v4";
+import type { CustomToolContext, ExtensionAPI, ToolDefinition } from "@oh-my-pi/pi-coding-agent";
 import { getKimiToken } from "./auth";
 import { callGateway, GatewayError } from "./client";
 import { appendTrace, expectedResponseFilePath, extractText, writeFiles } from "./utils";
@@ -8,7 +7,7 @@ export type KimiToolLogger = Pick<ExtensionAPI["logger"], "error" | "warn">;
 
 export type KimiToolContext = Pick<CustomToolContext, "modelRegistry" | "sessionManager">;
 
-export interface KimiToolParameters extends ZodType {}
+export type KimiToolParameters = ToolDefinition["parameters"];
 
 export type KimiDatasourceToolSpec = {
   name: "get_data_source_desc" | "call_data_source_tool";
@@ -22,7 +21,6 @@ export type KimiDatasourceToolSpec = {
     ctx: KimiToolContext,
   ): Promise<{ content: { type: "text"; text: string }[]; isError?: boolean }>;
 };
-
 export function createKimiDatasourceTools(
   pi: Pick<ExtensionAPI, "zod">,
   logger: KimiToolLogger,
@@ -38,7 +36,8 @@ export function createKimiDatasourceTools(
       parameters: pi.zod.object({
         name: pi.zod.string().describe(
           "Data source name. Must be one of: stock_finance_data, yahoo_finance, world_bank_open_data, " +
-          "tianyancha, arxiv, scholar, yuandian_law, wind, imf, gildata, sec_edgar, sp_data. " +
+          "tianyancha, arxiv, scholar, yuandian_law, wind, imf, gildata, sec_edgar, sp_data, " +
+          "china_nda, china_nbs, china_standards, who, fao, unsd, ecb, eurostat, unicef, oecd, fred, xhcj, caixin. " +
           "Capabilities: stock_finance_data / yahoo_finance = general quotes and financials " +
           "(yahoo_finance FX history is limited to about 2 years); world_bank_open_data = historical macro; " +
           "imf = FX rates, CPI, GDP forecasts, balance of payments; tianyancha = CN company registry; " +
@@ -46,7 +45,14 @@ export function createKimiDatasourceTools(
           "wind = A-share intraday minute series, funds, bonds (map PE/PB/ROE-style field names via wind_search_fields first); " +
           "gildata = natural-language stock/fund screening; " +
           "sec_edgar = US filings (10-K/10-Q, S-1, Form 4, 13F, 8-K); " +
-          "sp_data = S&P fundamentals (consensus estimates, valuation ratios, transcripts)."
+          "sp_data = S&P fundamentals (consensus estimates, valuation ratios, transcripts); " +
+          "china_nda = CN government open data catalogs (National Data Administration registry + provincial platforms); " +
+          "china_nbs = CN NBS macro indicators and time series (national / provincial / major-city scopes); " +
+          "china_standards = CN standards (GB national, HB industry, DB local, TT association); " +
+          "who / fao / unsd / ecb / eurostat / unicef / oecd / fred = international organization open data " +
+          "(global health, food & agriculture, UN statistics, ECB & EU statistics, child indicators, OECD datasets, US & global macro series); " +
+          "xhcj = Xinhua Finance (CNFIC) news flashes, announcements, and policies; " +
+          "caixin = Caixin database (600+ data APIs, discover via caixin_api_search first)."
         ),
       }),
       async execute(_toolCallId, params, signal, ctx) {
@@ -79,7 +85,7 @@ export function createKimiDatasourceTools(
       description:
         "Dispatch one call to the data source selected for the user's request. " +
         "Always call get_data_source_desc(name) first, then use an api_name and params from that description. " +
-        "For a simple lookup, use one specialized source and stop after its first successful result; " +
+        "For a simple lookup, use one specialized source and stop once a result covers the user's question; " +
         "do not query fallback or comparison sources unless the user explicitly asks for a cross-source comparison. " +
         "When the user names a data source, use that source. " +
         "This tool provides structured, batch, domain-specific data queries; it does not replace general web search or real-time news.",

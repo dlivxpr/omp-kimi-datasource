@@ -51,6 +51,24 @@ omp login kimi-code
 | A股 / 港股 / 美股 行情和财务 | `stock_finance_data` |
 | Yahoo Finance 全球金融 | `yahoo_finance` |
 | 世界银行宏观经济 | `world_bank_open_data` |
+| IMF 国际宏观经济 | `imf` |
+| 万得 Wind（A股/基金/债券/宏观） | `wind` |
+| 恒生聚源智能筛选 | `gildata` |
+| 美股 SEC 披露文件 | `sec_edgar` |
+| S&P Capital IQ 美股基本面 | `sp_data` |
+| 中国政府开放数据目录 | `china_nda` |
+| 国家统计局宏观指标 | `china_nbs` |
+| 中国标准查询（GB/HB/DB/TT） | `china_standards` |
+| 世界卫生组织公开数据 | `who` |
+| 联合国粮农组织数据 | `fao` |
+| 联合国统计司 UNdata | `unsd` |
+| 欧洲中央银行统计 | `ecb` |
+| 欧盟统计局数据 | `eurostat` |
+| 联合国儿童基金会数据 | `unicef` |
+| 经合组织 OECD 数据 | `oecd` |
+| FRED 宏观经济数据 | `fred` |
+| 新华财经资讯与公告 | `xhcj` |
+| 财新数据库 | `caixin` |
 | 中国企业工商信息 | `tianyancha` |
 | arXiv 论文预印本 | `arxiv` |
 | Google Scholar 学术搜索 | `scholar` |

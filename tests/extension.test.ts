@@ -40,17 +40,23 @@ function mockFetch(handler: typeof fetch): void {
   globalThis.fetch = handler;
 }
 
-function fakePi(): FakePi {
+function fakePi(): FakePi & { schemaDescriptions: string[] } {
   const tools: RegisteredTool[] = [];
   const warnings: string[] = [];
-  const schema = {
-    describe() {
-      return schema;
-    },
-  };
+  const schemaDescriptions: string[] = [];
+  function makeSchema(): unknown {
+    return {
+      describe(desc: string) {
+        schemaDescriptions.push(desc);
+        return makeSchema();
+      },
+    };
+  }
+  const schema = makeSchema();
   const pi = {
     tools,
     warnings,
+    schemaDescriptions,
     registerTool(tool: RegisteredTool) {
       tools.push(tool);
     },
@@ -78,7 +84,7 @@ function fakePi(): FakePi {
       },
     },
   };
-  return pi as unknown as FakePi;
+  return pi as unknown as FakePi & { schemaDescriptions: string[] };
 }
 
 function fakeContext(): ExtensionContext {
@@ -120,7 +126,7 @@ describe("activate", () => {
     expect(pi.warnings).toHaveLength(0);
   });
 
-  test("注册的工具描述包含 yuandian_law", () => {
+  test("注册的工具描述和参数包含 25 个数据源与覆盖性停止条件", () => {
     const pi = fakePi();
 
     activate(pi);
@@ -128,7 +134,41 @@ describe("activate", () => {
     const getDesc = pi.tools.find((tool) => tool.name === "get_data_source_desc");
     const callTool = pi.tools.find((tool) => tool.name === "call_data_source_tool");
     expect(getDesc?.description).toContain("data source");
-    expect(callTool?.description).toContain("get_data_source_desc");
+    expect(callTool?.description).toContain("stop once a result covers the user's question;");
+    expect(callTool?.description).not.toContain("stop after its first successful result;");
+
+    const nameParamDesc = pi.schemaDescriptions.find((d) => d.includes("Must be one of:"));
+    expect(nameParamDesc).toBeDefined();
+    const expectedSources = [
+      "stock_finance_data",
+      "yahoo_finance",
+      "world_bank_open_data",
+      "tianyancha",
+      "arxiv",
+      "scholar",
+      "yuandian_law",
+      "wind",
+      "imf",
+      "gildata",
+      "sec_edgar",
+      "sp_data",
+      "china_nda",
+      "china_nbs",
+      "china_standards",
+      "who",
+      "fao",
+      "unsd",
+      "ecb",
+      "eurostat",
+      "unicef",
+      "oecd",
+      "fred",
+      "xhcj",
+      "caixin",
+    ];
+    for (const source of expectedSources) {
+      expect(nameParamDesc).toContain(source);
+    }
   });
 
   test("get_data_source_desc 成功结果追加 trace 行", async () => {
