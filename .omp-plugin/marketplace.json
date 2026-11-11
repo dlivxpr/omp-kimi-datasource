@@ -6,13 +6,13 @@
   },
   "metadata": {
     "description": "OMP-only marketplace for the Kimi Code data-source plugin",
-    "version": "1.2.0"
+    "version": "1.3.0"
   },
   "plugins": [
     {
       "name": "omp-kimi-datasource",
-      "description": "Query stock/finance, macroeconomics, enterprise registry, academic papers, legal data, government open data, standards, international organizations, and financial news through the Kimi Code gateway in oh-my-pi.",
-      "version": "1.2.0",
+      "description": "Query 35 stock/finance, macro, government, standards, corporate, academic, legal, chemistry/bioinformatics, materials science, and financial news data sources through the Kimi Code gateway in oh-my-pi.",
+      "version": "1.3.0",
       "author": {
         "name": "dlivxpr"
       },

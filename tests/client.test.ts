@@ -77,8 +77,8 @@ describe("callGateway", () => {
     expect(requestBody).not.toHaveProperty("arguments");
     expect(headerValue(requestHeaders, "Authorization")).toBe("Bearer fake-token");
     expect(headerValue(requestHeaders, "X-Msh-Platform")).toBe("kimi-code-cli");
-    expect(headerValue(requestHeaders, "X-Msh-Version")).toBe("3.4.0");
-    expect(headerValue(requestHeaders, "User-Agent")).toBe("kimi-datasource/3.4.0");
+    expect(headerValue(requestHeaders, "X-Msh-Version")).toBe("3.5.1");
+    expect(headerValue(requestHeaders, "User-Agent")).toBe("kimi-datasource/3.5.1");
     expect(result.payload).toEqual({ result: { assistant: [{ type: "text", text: "数据源描述结果" }] } });
     expect(result.trace.requestId).toBe("req-1");
     expect(result.trace.toolCallId).toBe(headerValue(requestHeaders, "X-Msh-Tool-Call-Id"));

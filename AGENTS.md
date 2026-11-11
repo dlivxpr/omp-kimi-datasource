@@ -73,6 +73,16 @@ omp login kimi-code
 | arXiv 论文预印本 | `arxiv` |
 | Google Scholar 学术搜索 | `scholar` |
 | 中国法律法规 / 司法案例 | `yuandian_law` |
+| ChEMBL 生物活性 / 药物机制 | `chembl` |
+| Materials Project 材料计算 | `materials_project` |
+| NCBI BLAST 序列相似性 | `ncbi_blast` |
+| OQMD 材料性质 / 晶体结构 | `oqmd` |
+| RCSB PDB 实验三维结构 | `pdb` |
+| PubChem 化合物身份 / 性质 | `pubchem` |
+| UniProt 蛋白序列 / 注释 | `uniprot` |
+| 东方财富妙想金融数据 / 报告 | `dongcai` |
+| 财联社快讯 / 深度要闻 | `cls` |
+| 国内外卖方研报检索 | `finance_research` |
 
 ## 关键约束
 

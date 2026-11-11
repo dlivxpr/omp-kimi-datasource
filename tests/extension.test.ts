@@ -78,7 +78,7 @@ function fakePi(): FakePi & { schemaDescriptions: string[] } {
       },
     },
     logger: {
-      error() {},
+      error() { },
       warn(message: string) {
         warnings.push(message);
       },
@@ -126,7 +126,7 @@ describe("activate", () => {
     expect(pi.warnings).toHaveLength(0);
   });
 
-  test("注册的工具描述和参数包含 25 个数据源与覆盖性停止条件", () => {
+  test("注册的工具描述和参数包含 35 个数据源与覆盖性停止条件", () => {
     const pi = fakePi();
 
     activate(pi);
@@ -165,6 +165,16 @@ describe("activate", () => {
       "fred",
       "xhcj",
       "caixin",
+      "chembl",
+      "materials_project",
+      "ncbi_blast",
+      "oqmd",
+      "pdb",
+      "pubchem",
+      "uniprot",
+      "dongcai",
+      "cls",
+      "finance_research",
     ];
     for (const source of expectedSources) {
       expect(nameParamDesc).toContain(source);

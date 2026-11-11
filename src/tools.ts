@@ -37,7 +37,8 @@ export function createKimiDatasourceTools(
         name: pi.zod.string().describe(
           "Data source name. Must be one of: stock_finance_data, yahoo_finance, world_bank_open_data, " +
           "tianyancha, arxiv, scholar, yuandian_law, wind, imf, gildata, sec_edgar, sp_data, " +
-          "china_nda, china_nbs, china_standards, who, fao, unsd, ecb, eurostat, unicef, oecd, fred, xhcj, caixin. " +
+          "china_nda, china_nbs, china_standards, who, fao, unsd, ecb, eurostat, unicef, oecd, fred, xhcj, caixin, " +
+          "chembl, materials_project, ncbi_blast, oqmd, pdb, pubchem, uniprot, dongcai, cls, finance_research. " +
           "Capabilities: stock_finance_data / yahoo_finance = general quotes and financials " +
           "(yahoo_finance FX history is limited to about 2 years); world_bank_open_data = historical macro; " +
           "imf = FX rates, CPI, GDP forecasts, balance of payments; tianyancha = CN company registry; " +
@@ -52,7 +53,17 @@ export function createKimiDatasourceTools(
           "who / fao / unsd / ecb / eurostat / unicef / oecd / fred = international organization open data " +
           "(global health, food & agriculture, UN statistics, ECB & EU statistics, child indicators, OECD datasets, US & global macro series); " +
           "xhcj = Xinhua Finance (CNFIC) news flashes, announcements, and policies; " +
-          "caixin = Caixin database (600+ data APIs, discover via caixin_api_search first)."
+          "caixin = Caixin database (600+ data APIs, discover via caixin_api_search first); " +
+          "chembl = curated ChEMBL compounds, targets, assays, bioactivities, and mechanisms of action; " +
+          "materials_project = Materials Project DFT properties and MP ID lookup (requires MP_API_KEY); " +
+          "ncbi_blast = asynchronous nucleotide/protein sequence similarity searches; " +
+          "oqmd = OQMD DFT material properties and OPTIMADE crystal structures; " +
+          "pdb = RCSB PDB experimental 3D structures, polymer entities, and ligands; " +
+          "pubchem = PubChem chemical identities, synonyms, computed properties, and 2D similarity; " +
+          "uniprot = UniProtKB protein sequences, annotations, and cross-database ID mapping; " +
+          "dongcai = Eastmoney financial data, market analysis, and research report generation; " +
+          "cls = CLS financial telegraphs and in-depth news; " +
+          "finance_research = domestic and international sell-side research reports."
         ),
       }),
       async execute(_toolCallId, params, signal, ctx) {

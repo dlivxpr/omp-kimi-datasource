@@ -1,10 +1,10 @@
 # omp-kimi-datasource
 
-[oh-my-pi](https://github.com/can1357/oh-my-pi) 的 Kimi Code 数据源插件，已同步上游 kimi-datasource **3.4.0**。
+[oh-my-pi](https://github.com/can1357/oh-my-pi) 的 Kimi Code 数据源插件，已同步上游 kimi-datasource **3.5.1**。
 
-通过 Kimi Code 网关查询 25 个外部数据源：股票/财报、全球金融、宏观经济（世行/IMF/FRED/国家统计局）、中国政府开放数据目录、国家与行业标准、国际组织公开库（WHO/FAO/UNSD/ECB/Eurostat/UNICEF/OECD）、智能筛选、SEC 披露、中国企业工商信息、学术论文、法律法规与司法案例、新华财经与财新资讯。
+通过 Kimi Code 网关查询 35 个外部数据源：股票/财报、全球金融、宏观经济（世行/IMF/FRED/国家统计局）、中国政府开放数据目录、国家与行业标准、国际组织公开库（WHO/FAO/UNSD/ECB/Eurostat/UNICEF/OECD）、智能筛选、SEC 披露、中国企业工商信息、学术论文、法律法规与司法案例、新华财经/财新/财联社资讯、卖方研报、化学与生物信息（ChEMBL/PubChem/BLAST/PDB/UniProt）、材料科学（Materials Project/OQMD）。
 
-上游官方实现：https://github.com/MoonshotAI/kimi-code/tree/main/plugins/official/kimi-datasource
+上游官方实现：https://github.com/MoonshotAI/kimi-code/blob/main/docs/en/customization/plugins.md#kimi-datasource
 
 > 🌐 [English](README.md)
 
@@ -37,8 +37,18 @@
 | arXiv 论文预印本 | `arxiv` | 论文搜索与下载 |
 | Google Scholar 学术搜索 | `scholar` | 作者论文、高引文献 |
 | 中国法律法规与司法案例 | `yuandian_law` | 法条与判例查询 |
+| ChEMBL 生物活性 / 药物机制 | `chembl` | 策展化合物、靶点、assay、生物活性与作用机制 |
+| Materials Project 材料计算 | `materials_project` | DFT 性质与 MP ID 查询（需要 `MP_API_KEY`） |
+| NCBI BLAST 序列相似性 | `ncbi_blast` | 异步核酸 / 蛋白序列相似性搜索 |
+| OQMD 材料性质 / 晶体结构 | `oqmd` | DFT 性质与 OPTIMADE 晶体结构 |
+| RCSB PDB 实验三维结构 | `pdb` | 实验结构、聚合物链、配体 |
+| PubChem 化合物身份 / 性质 | `pubchem` | 化合物身份、计算性质、2D 相似性 |
+| UniProt 蛋白序列 / 注释 | `uniprot` | 蛋白序列、功能注释、跨库 ID 映射 |
+| 东方财富妙想金融数据 / 报告 | `dongcai` | 结构化金融数据、专项诊断、研报生成 |
+| 财联社快讯 / 深度要闻 | `cls` | 财联社快讯与市场要闻 |
+| 国内外卖方研报检索 | `finance_research` | 国内外卖方研报检索 |
 
-这些工具提供结构化、批量、领域专属的数据查询，不替代通用 Web 搜索或 xhcj / caixin 覆盖范围之外的实时新闻。
+这些工具提供结构化、批量、领域专属的数据查询，不替代通用 Web 搜索或 xhcj / caixin / cls / dongcai 覆盖范围之外的实时新闻。
 
 ## 安装
 

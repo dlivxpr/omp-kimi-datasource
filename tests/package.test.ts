@@ -19,22 +19,22 @@ describe("package manifest", () => {
     expect(pkg.pi).toBeUndefined();
   });
 
-  it("package.json 使用 omp 17 类型依赖", () => {
+  it("package.json 使用 omp 18 类型依赖", () => {
     const dep = pkg.devDependencies?.["@oh-my-pi/pi-coding-agent"];
-    expect(dep).toMatch(/^\^17\./);
+    expect(dep).toMatch(/^\^18\./);
   });
 
-  it("package/marketplace/skill 使用统一项目名与 1.2.0 版本", () => {
+  it("package/marketplace/skill 使用统一项目名与 1.3.0 版本", () => {
     expect(pkg.name).toBe(PROJECT_NAME);
-    expect(pkg.version).toBe("1.2.0");
+    expect(pkg.version).toBe("1.3.0");
     expect(pkg.repository?.url).toBe(`git+https://github.com/dlivxpr/${PROJECT_NAME}.git`);
     expect(marketplace.name).toBe(PROJECT_NAME);
-    expect(marketplace.metadata?.version).toBe("1.2.0");
+    expect(marketplace.metadata?.version).toBe("1.3.0");
     expect(marketplace.owner?.name).toBe("dlivxpr");
     expect(marketplace.plugins).toHaveLength(1);
     expect(marketplace.plugins[0]).toEqual(expect.objectContaining({
       name: PROJECT_NAME,
-      version: "1.2.0",
+      version: "1.3.0",
       source: "./",
       repository: `https://github.com/dlivxpr/${PROJECT_NAME}`,
     }));
@@ -43,8 +43,8 @@ describe("package manifest", () => {
     expect(skillGuide).toContain(`# ${PROJECT_NAME} — 结构化数据源助手`);
   });
 
-  it("SKILL.md 覆盖全部 25 个数据源与关键边界规则", () => {
-    expect(skillGuide).toContain("25 个外部数据源");
+  it("SKILL.md 覆盖全部 35 个数据源与关键边界规则", () => {
+    expect(skillGuide).toContain("35 个外部数据源");
     const expectedSources = [
       "stock_finance_data",
       "yahoo_finance",
@@ -71,6 +71,16 @@ describe("package manifest", () => {
       "fred",
       "xhcj",
       "caixin",
+      "chembl",
+      "materials_project",
+      "ncbi_blast",
+      "oqmd",
+      "pdb",
+      "pubchem",
+      "uniprot",
+      "dongcai",
+      "cls",
+      "finance_research",
     ];
 
     for (const source of expectedSources) {

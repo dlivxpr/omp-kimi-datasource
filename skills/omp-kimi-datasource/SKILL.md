@@ -1,7 +1,7 @@
 ---
 name: omp-kimi-datasource
 description: |
-  结构化、批量、领域专属的数据源助手。当用户要查股票/财报/技术指标/Wind/美股SEC披露/S&P基本面/全球宏观经济(世行/IMF/FRED/国家统计局)/中国政府开放数据/国家标准与行业标准/WHO/FAO/OECD/中国企业工商/学术论文/中国法律法规与司法案例/新华财经与财新资讯这类外部数据时，使用这个 skill。
+  结构化、批量、领域专属的数据源助手。当用户要查股票/财报/技术指标/Wind/美股SEC披露/S&P基本面/全球宏观经济(世行/IMF/FRED/国家统计局)/中国政府开放数据/国家标准与行业标准/WHO/FAO/OECD/中国企业工商/学术论文/中国法律法规与司法案例/新华财经与财新资讯/化学与生物信息(ChEMBL/PubChem/BLAST/PDB/UniProt)/材料科学(Materials Project/OQMD)/卖方研报与财联社快讯这类外部数据时，使用这个 skill。
   本 plugin 注册了两个工具：
   - `get_data_source_desc(name)`：查某个数据源能做什么，返回 Markdown 文档
   - `call_data_source_tool(data_source_name, api_name, params)`：按文档调用具体数据源 API（含实时行情）
@@ -11,7 +11,7 @@ description: |
 
 ## 1. 这个 skill 提供什么能力
 
-本 plugin 后面挂了 25 个外部数据源。每一行的"数据源名"就是你后续传给 `get_data_source_desc(name=...)` 的参数。
+本 plugin 后面挂了 35 个外部数据源。每一行的"数据源名"就是你后续传给 `get_data_source_desc(name=...)` 的参数。
 
 | 能力域 | 数据源名 | 典型问题 |
 |---|---|---|
@@ -40,6 +40,16 @@ description: |
 | **FRED 宏观经济数据** | `fred` | "美国长周期 CPI 指数"、"美联储联邦基金有效利率 (EFFR)"、"美国失业率走势" |
 | **新华财经资讯与公告** | `xhcj` | "新华财经 7x24 快讯"、"A股上市公司最新公告"、"最新宏观与产业政策解读" |
 | **财新数据库** | `caixin` | "财新数据接口查询"、"财新专有高频金融数据库取数" |
+| **ChEMBL 生物活性 / 药物机制** | `chembl` | "伊马替尼对 ABL1 的 IC50/Ki 和作用机制" |
+| **Materials Project 材料计算** | `materials_project` | "筛选含 Fe、O 且带隙为 1–3 eV 的稳定材料" |
+| **NCBI BLAST 序列相似性** | `ncbi_blast` | "用 blastp 搜索这段蛋白序列的同源命中" |
+| **OQMD 材料性质 / 晶体结构** | `oqmd` | "查 Fe2O3 的形成能、带隙和晶体结构" |
+| **RCSB PDB 实验三维结构** | `pdb` | "1TUP 的实验方法、分辨率和聚合物链" |
+| **PubChem 化合物身份 / 性质 / 相似性** | `pubchem` | "查阿司匹林 CID、分子量和结构相似化合物" |
+| **UniProt 蛋白序列 / 注释 / ID 映射** | `uniprot` | "查人源 TP53 的序列与功能注释，并映射到 PDB" |
+| **东方财富妙想金融数据 / 分析 / 报告** | `dongcai` | "分析茅台的基本面和估值，生成首次覆盖深度研报" |
+| **财联社快讯 / 深度要闻** | `cls` | "汇总过去两小时的财联社快讯和股市要闻" |
+| **国内外卖方研报检索** | `finance_research` | "检索 2025 年以来中国半导体行业的卖方研报" |
 
 ### 选源原则
 
@@ -59,8 +69,12 @@ description: |
 - **国际组织数据源直接路由**：WHO、FAO、UNSD、ECB、Eurostat、UNICEF、OECD、FRED 各自作为独立数据源直接按机构名称选用；IMF 自有数据（汇率/CPI/预测）走 `imf`
 - **标准与法律严格区分**：国家标准（GB）、行业标准（HB）、地方标准（DB）、团体标准（TT）使用 `china_standards`；法律法规与司法判例使用 `yuandian_law`，两者不得混淆
 - **资讯与动态接口发现**：新华财经（`xhcj`）侧重公告、快讯与政策；`caixin` 覆盖 600+ 接口，必须先调用 `caixin_api_search` 发现可用接口后再取数
+- **化学与生物源分工**：`chembl` 查策展生物活性和作用机制；`pubchem` 查化合物身份、计算性质和 2D 结构相似性，两者不要混用
+- **结构 / 序列 / 比对分工**：`pdb` 是实验三维结构条目；`uniprot` 是蛋白序列、功能注释和跨库 ID 映射；`ncbi_blast` 是异步序列相似性搜索，提交后需用 RID 获取结果
+- **材料源分工**：`materials_project` 支持 MP ID 和成分 / 性质筛选，需要 `MP_API_KEY`；`oqmd` 另有 OPTIMADE 晶体结构查询，其结构 ID 与原生 API 的 entry ID 不通用
+- **金融资讯与研报分工**：`dongcai` 覆盖结构化金融数据、专项诊断和报告生成；`finance_research` 用于国内外卖方研报检索；`cls` 只覆盖财联社快讯和深度要闻
 
-**不支持的能力**：通用 Web 搜索，以及 xhcj / caixin 覆盖范围之外的实时新闻。问到这类问题，告诉用户当前数据源不覆盖。
+**不支持的能力**：通用 Web 搜索，以及 xhcj / caixin / cls / dongcai 覆盖范围之外的实时新闻。问到这类问题，告诉用户当前数据源不覆盖。
 
 ## 2. 标准工作流：`get_data_source_desc` → `call_data_source_tool`
 
@@ -114,9 +128,9 @@ A 股 `.SH/.SZ/.BJ`，港股 `.HK`，美股 `.US` 等。用户通常只说中文
 
 `tianyancha` 拒收"特斯拉"、"网易"、"腾讯"这种简称，必须给"北京特斯拉销售有限公司"这种全名。不知道全名时，先调它的公司搜索 API。
 
-### 3.3 多数 API 需要 `file_path`
+### 3.3 文件参数以数据源文档为准
 
-绝大部分数据源 API 把完整结果以 CSV 形式写到 `file_path`（部分接口文档也可能写作 `filepath`）。漏传会报 `Missing required parameters: file_path`。不知道传啥时，给一个 `/tmp/<场景>_<时间戳>.csv` 即可。
+需要 `file_path` 的 API 会把完整结果写到指定路径（部分源使用 `filepath`）。漏传必填的文件参数会报 `Missing required parameters`。不知道传啥时，可给 `/tmp/<场景>_<时间戳>.csv`；会生成 CSV / PDF / DOCX 的接口若提供文件参数，应显式给出目标路径，以便插件保存附件。直接返回 JSON 或文本的接口不要强行补文件参数，以 desc 的参数表为准。
 
 **注意**：如果工具返回中出现了 `⚠️ 警告：请求中指定了 file_path=...，但未观察到该路径的文件已落盘`，说明服务端没有返回文件，此时不要声称完整数据已保存，应把 `data_preview` 中的内容作为最终结果回答用户。
 
@@ -126,10 +140,12 @@ A 股 `.SH/.SZ/.BJ`，港股 `.HK`，美股 `.US` 等。用户通常只说中文
 
 ## 4. 怎么读返回结果
 
-`call_data_source_tool` 的返回内容有两处数据：
+对输出 CSV 的 API，`call_data_source_tool` 的返回内容有两处数据：
 
 1. **`data_preview`**：CSV 表头 + 数据行预览，**最多 50 行**，方便你直接答简单问题
 2. **完整数据已落盘**：你在 `params` 里传的 `file_path` 所指的 CSV 已由工具写到磁盘（返回文本中也会回显实际写入的路径列表），不再受 50 行限制
+
+直接返回 JSON / 文本的 API 读取正文即可；生成 PDF / DOCX 等报告时，确认附件路径和保存结果。
 
 策略：
 - 用户只问"XX 现在多少钱"、"中国 2023 GDP 多少"这种单值 → `data_preview` 一般够，直接答

@@ -1,10 +1,10 @@
 # omp-kimi-datasource
 
-Kimi Code data-source plugin for [oh-my-pi](https://github.com/can1357/oh-my-pi), synced with upstream kimi-datasource **3.4.0**.
+Kimi Code data-source plugin for [oh-my-pi](https://github.com/can1357/oh-my-pi), synced with upstream kimi-datasource **3.5.1**.
 
-Query 25 external data sources — stock/finance, global markets, macroeconomics (World Bank, IMF, FRED, NBS), Chinese government open data catalogs, national & industry standards, international organizations (WHO, FAO, UNSD, ECB, Eurostat, UNICEF, OECD), SEC filings, Chinese enterprise registry, academic papers, legal data, and financial news (Xinhua Finance, Caixin) — through the Kimi Code gateway.
+Query 35 external data sources — stock/finance, global markets, macroeconomics (World Bank, IMF, FRED, NBS), Chinese government open data catalogs, national & industry standards, international organizations (WHO, FAO, UNSD, ECB, Eurostat, UNICEF, OECD), SEC filings, Chinese enterprise registry, academic papers, legal data, financial news (Xinhua Finance, Caixin, CLS), sell-side research, chemistry & bioinformatics (ChEMBL, PubChem, BLAST, PDB, UniProt), and materials science (Materials Project, OQMD) — through the Kimi Code gateway.
 
-Upstream official implementation: https://github.com/MoonshotAI/kimi-code/tree/main/plugins/official/kimi-datasource
+Upstream official implementation: https://github.com/MoonshotAI/kimi-code/blob/main/docs/en/customization/plugins.md#kimi-datasource
 
 > 🌐 [中文文档](README.zh-CN.md)
 
@@ -37,8 +37,18 @@ Upstream official implementation: https://github.com/MoonshotAI/kimi-code/tree/m
 | arXiv preprints | `arxiv` | Paper search and download |
 | Google Scholar academic search | `scholar` | Author papers, highly-cited literature |
 | Chinese laws, regulations, and judicial cases | `yuandian_law` | Statutes and case law lookup |
+| ChEMBL bioactivity & drug mechanisms | `chembl` | Curated compounds, targets, assays, bioactivities, mechanisms of action |
+| Materials Project materials computation | `materials_project` | DFT properties and MP ID lookup (requires `MP_API_KEY`) |
+| NCBI BLAST sequence similarity | `ncbi_blast` | Asynchronous nucleotide / protein similarity searches |
+| OQMD materials properties & structures | `oqmd` | DFT properties and OPTIMADE crystal structures |
+| RCSB PDB experimental structures | `pdb` | Experimental 3D structures, polymer entities, ligands |
+| PubChem chemical identity & properties | `pubchem` | Compound identities, computed properties, 2D similarity |
+| UniProt protein sequences & annotation | `uniprot` | Protein sequences, functional annotation, cross-database ID mapping |
+| Eastmoney Miaoxiang financial data & reports | `dongcai` | Structured financial data, diagnostics, research report generation |
+| CLS financial telegraphs & in-depth news | `cls` | CLS flashes and market news |
+| Sell-side research reports | `finance_research` | Domestic and international sell-side research search |
 
-These tools provide structured, batch, domain-specific data queries — they do not replace general web search or real-time news outside xhcj / caixin.
+These tools provide structured, batch, domain-specific data queries — they do not replace general web search or real-time news outside xhcj / caixin / cls / dongcai.
 
 ## Installation
 
